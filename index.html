@@ -3,1021 +3,403 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WNBA Offense Grader 2026</title>
+<title>WNBA Offense Grader — 2026</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-:root {
-  --bg: #0c0c10;
-  --surface: #13131a;
-  --surface2: #1a1a24;
-  --surface3: #22222e;
-  --border: rgba(255,255,255,0.055);
-  --border2: rgba(255,255,255,0.10);
-  --text: #e8e8f0;
-  --text2: #7878a0;
-  --text3: #3e3e58;
-  --lime: #c8f035;
-  --lime-dim: rgba(200,240,53,0.09);
-  --lime-mid: rgba(200,240,53,0.18);
-  --red: #ff6b6b;
-  --blue: #5b9cf6;
-  --amber: #f0a830;
-  --r: 6px;
-}
-* { box-sizing:border-box; margin:0; padding:0; }
-body { background:var(--bg); color:var(--text); font-family:-apple-system,'Inter','Segoe UI',sans-serif; font-size:13px; line-height:1.55; min-height:100vh; }
-
-/* HEADER */
-.header { display:flex; align-items:center; justify-content:space-between; padding:16px 24px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:10px; }
-.logo { display:flex; align-items:center; gap:10px; }
-.logo-mark { width:28px; height:28px; background:var(--lime); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.logo-mark svg { width:14px; height:14px; fill:var(--bg); }
-.logo h1 { font-size:14px; font-weight:600; letter-spacing:-0.01em; }
-.logo .season { font-size:11px; color:var(--lime); background:var(--lime-dim); padding:2px 8px; border-radius:999px; font-weight:500; }
-.header-right { display:flex; align-items:center; gap:12px; font-size:11px; color:var(--text2); }
-.live-pill { display:flex; align-items:center; gap:5px; background:var(--surface2); border:1px solid var(--border2); padding:4px 10px; border-radius:999px; }
-.dot { width:5px; height:5px; border-radius:50%; background:var(--lime); animation:pulse 2s infinite; }
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* NAV */
-nav { display:flex; border-bottom:1px solid var(--border); padding:0 24px; overflow-x:auto; gap:2px; }
-.tab { flex-shrink:0; padding:10px 14px; font-size:12px; font-weight:500; background:none; border:none; cursor:pointer; color:var(--text2); border-bottom:2px solid transparent; margin-bottom:-1px; transition:all .15s; letter-spacing:.01em; }
-.tab:hover { color:var(--text); }
-.tab.active { color:var(--lime); border-bottom-color:var(--lime); }
-
-/* MAIN */
-main { padding:20px 24px; max-width:1200px; }
-.tab-panel { display:none; }
-.tab-panel.active { display:block; }
-
-/* LOADING STATE */
-.loader-wrap { padding:60px 0; text-align:center; }
-.loader { display:inline-block; width:32px; height:32px; border:2px solid var(--border2); border-top-color:var(--lime); border-radius:50%; animation:spin .7s linear infinite; }
+:root{--bg:#0e0e10;--bg2:#18181c;--bg3:#222228;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);--text:#f0f0f2;--text2:#9999aa;--text3:#55556a;--accent:#c8f55a;--adim:rgba(200,245,90,0.12);--red:#f07070;--rdim:rgba(240,112,112,0.12);--blue:#5eb0f5;--bdim:rgba(94,176,245,0.12);--amber:#f0a830;--r:10px;--rs:6px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh;}
+header{border-bottom:.5px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.wordmark{display:flex;align-items:center;gap:10px;}
+.wordmark h1{font-size:17px;font-weight:600;letter-spacing:-.02em;}
+.badge{font-size:11px;background:var(--adim);color:var(--accent);padding:2px 8px;border-radius:999px;font-weight:500;}
+.hdr-right{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text3);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block;margin-right:5px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+#cache-status{font-size:11px;color:var(--text3);}
+.refresh-btn{background:none;border:.5px solid var(--border2);border-radius:var(--rs);padding:5px 10px;font-size:12px;color:var(--text2);cursor:pointer;}
+.refresh-btn:hover{color:var(--text);}
+nav{display:flex;border-bottom:.5px solid var(--border);padding:0 28px;overflow-x:auto;}
+.ntab{padding:11px 15px;font-size:13px;background:none;border:none;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-.5px;white-space:nowrap;transition:color .15s;}
+.ntab:hover{color:var(--text);}
+.ntab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:500;}
+main{padding:20px 28px;max-width:1100px;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.cbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px;}
+.clabel{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+select{background:var(--bg2);color:var(--text);border:.5px solid var(--border2);border-radius:var(--rs);padding:6px 10px;font-size:13px;cursor:pointer;}
+.tgrp{display:flex;border:.5px solid var(--border2);border-radius:var(--rs);overflow:hidden;}
+.tbtn{padding:6px 13px;font-size:13px;background:none;border:none;cursor:pointer;color:var(--text2);border-right:.5px solid var(--border);transition:all .15s;}
+.tbtn:last-child{border-right:none;}
+.tbtn.active{background:var(--adim);color:var(--accent);}
+.ibox{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r);padding:13px 16px;margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.7;}
+.ibox strong{color:var(--text);font-weight:500;}
+.ibox em{color:var(--accent);font-style:normal;}
+.ibox code{font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--text2);}
+.twrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{text-align:left;font-size:11px;font-weight:500;color:var(--text3);padding:7px 9px;border-bottom:.5px solid var(--border);white-space:nowrap;user-select:none;}
+thead th.sorted{color:var(--accent);}
+tbody td{padding:9px 9px;border-bottom:.5px solid var(--border);color:var(--text);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:var(--bg2);}
+.bt{display:inline-block;background:var(--bg3);border-radius:2px;height:5px;width:58px;vertical-align:middle;margin-left:7px;}
+.bf{height:5px;border-radius:2px;}
+.gr{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;}
+.gr-A{background:var(--adim);color:var(--accent);}
+.gr-B{background:var(--bdim);color:var(--blue);}
+.gr-C{background:rgba(186,117,23,.15);color:var(--amber);}
+.gr-D{background:var(--rdim);color:var(--red);}
+.gr-F{background:rgba(180,50,50,.2);color:#e05050;}
+.dp{background:var(--adim);color:var(--accent);border-radius:999px;padding:2px 8px;font-size:12px;}
+.dn{background:var(--rdim);color:var(--red);border-radius:999px;padding:2px 8px;font-size:12px;}
+.dz{background:var(--bg3);color:var(--text3);border-radius:999px;padding:2px 8px;font-size:12px;}
+.mid-bad{color:var(--red);font-weight:500;}
+.srcline{font-size:11px;color:var(--text3);margin-top:8px;}
+.loading{padding:36px;text-align:center;color:var(--text3);font-size:14px;}
+.sp{display:inline-block;width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loader-text { margin-top:14px; color:var(--text2); font-size:12px; }
-.loader-step { font-size:11px; color:var(--text3); margin-top:4px; }
-.progress-bar { width:200px; height:2px; background:var(--surface3); border-radius:1px; margin:10px auto 0; }
-.progress-fill { height:2px; background:var(--lime); border-radius:1px; transition:width .3s; }
-
-/* INFO CARDS */
-.info { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:12px 15px; margin-bottom:16px; font-size:12px; color:var(--text2); line-height:1.7; }
-.info strong { color:var(--text); font-weight:500; }
-.info em { color:var(--lime); font-style:normal; }
-.info a { color:var(--text2); }
-.warn { background:var(--lime-dim); border:1px solid var(--lime-mid); border-radius:var(--r); padding:9px 13px; margin-bottom:12px; font-size:12px; color:var(--lime); }
-.err { background:rgba(255,107,107,.08); border:1px solid rgba(255,107,107,.2); border-radius:var(--r); padding:9px 13px; margin-bottom:12px; font-size:12px; color:var(--red); }
-
-/* CONTROLS */
-.controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px; }
-.ctrl { display:flex; align-items:center; gap:7px; }
-.ctrl-label { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.07em; white-space:nowrap; }
-select { background:var(--surface2); color:var(--text); border:1px solid var(--border2); border-radius:var(--r); padding:5px 10px; font-size:12px; cursor:pointer; appearance:none; }
-.seg { display:flex; border:1px solid var(--border2); border-radius:var(--r); overflow:hidden; }
-.seg-btn { padding:5px 11px; font-size:12px; background:none; border:none; cursor:pointer; color:var(--text2); border-right:1px solid var(--border); transition:all .15s; }
-.seg-btn:last-child { border-right:none; }
-.seg-btn.on { background:var(--lime-dim); color:var(--lime); font-weight:500; }
-
-/* TABLES */
-.tbl-wrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; font-size:12px; }
-thead th { text-align:left; font-size:10px; font-weight:500; color:var(--text3); padding:7px 8px; border-bottom:1px solid var(--border); cursor:pointer; white-space:nowrap; user-select:none; text-transform:uppercase; letter-spacing:.05em; }
-thead th:hover { color:var(--text2); }
-thead th.sorted { color:var(--lime); }
-thead th .sub { font-weight:400; font-size:9px; color:var(--text3); display:block; text-transform:none; letter-spacing:0; margin-top:1px; }
-tbody td { padding:8px 8px; border-bottom:1px solid var(--border); vertical-align:middle; }
-tbody tr:last-child td { border-bottom:none; }
-tbody tr:hover td { background:rgba(255,255,255,.015); }
-
-/* TEAM CELL */
-.tc { display:flex; align-items:center; gap:7px; white-space:nowrap; font-weight:500; }
-.tc-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.tc-city { font-size:10px; color:var(--text3); font-weight:400; }
-
-/* BARS */
-.bar { display:inline-flex; align-items:center; gap:6px; }
-.bar-track { display:inline-block; background:var(--surface3); border-radius:2px; height:3px; width:52px; vertical-align:middle; }
-.bar-fill { height:3px; border-radius:2px; }
-
-/* GRADES */
-.grade { display:inline-block; padding:2px 7px; border-radius:999px; font-size:10px; font-weight:700; letter-spacing:.02em; }
-.A { background:rgba(200,240,53,.14); color:#c8f035; }
-.B { background:rgba(91,156,246,.14); color:#5b9cf6; }
-.C { background:rgba(240,168,48,.13); color:#f0a830; }
-.D { background:rgba(255,107,107,.12); color:#ff6b6b; }
-.F { background:rgba(200,60,60,.16); color:#e04040; }
-
-/* DELTA BADGES */
-.dpos { background:rgba(200,240,53,.10); color:#c8f035; border-radius:999px; padding:1px 6px; font-size:11px; }
-.dneg { background:rgba(255,107,107,.10); color:#ff6b6b; border-radius:999px; padding:1px 6px; font-size:11px; }
-.dneu { background:rgba(120,120,160,.10); color:var(--text2); border-radius:999px; padding:1px 6px; font-size:11px; }
-
-/* ZONE BREAKDOWN */
-.zone-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:8px; margin:16px 0; }
-.zone-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:13px; }
-.zone-label { font-size:10px; color:var(--lime); font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
-.zone-xpps { font-size:22px; font-weight:700; letter-spacing:-.03em; margin-bottom:2px; }
-.zone-desc { font-size:11px; color:var(--text2); line-height:1.5; }
-
-/* DATA SOURCE NOTE */
-.src-note { font-size:10px; color:var(--text3); margin-bottom:12px; }
-.src-note a { color:var(--text3); text-decoration:underline; }
-.src-note.live { color:#4a8; }
-
-/* CHART */
-.chart-section { margin-top:24px; }
-.chart-title { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.07em; margin-bottom:10px; }
-
-/* SPLIT TABLE for zone details */
-.split-header { display:flex; align-items:center; justify-content:space-between; margin:18px 0 10px; }
-.split-header h3 { font-size:12px; font-weight:600; color:var(--text); }
-
-@media(max-width:640px){
-  .header,.nav-inner,main{padding-left:14px;padding-right:14px;}
-  .tc-city{display:none;}
-  .bar-track{display:none;}
-  table{font-size:11px;}
-  thead th,tbody td{padding:6px 5px;}
-}
+.progress-bar{width:100%;max-width:300px;height:4px;background:var(--bg3);border-radius:2px;margin:12px auto 0;}
+.progress-fill{height:4px;background:var(--accent);border-radius:2px;transition:width .3s;}
+.chart-wrap{margin-top:24px;}
+.chart-title{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.mcard{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r);padding:14px;}
+.mzone{font-size:12px;color:var(--accent);font-weight:500;margin-bottom:4px;}
+.mxpps{font-size:26px;font-weight:600;margin-bottom:4px;}
+.mcard p{font-size:12px;color:var(--text2);line-height:1.5;}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0;}
+.data-tag{display:inline-block;font-size:11px;background:var(--adim);color:var(--accent);padding:1px 7px;border-radius:999px;margin-left:6px;vertical-align:middle;}
+@media(max-width:600px){header,nav,main{padding-left:14px;padding-right:14px;}table{font-size:12px;}thead th,tbody td{padding:6px 5px;}.bt{display:none;}}
 </style>
 </head>
 <body>
-
-<div class="header">
-  <div class="logo">
-    <div class="logo-mark">
-      <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="none"/><path d="M8 2 Q11 5 11 8 Q11 11 8 14 Q5 11 5 8 Q5 5 8 2Z" fill="rgba(0,0,0,0.35)"/><path d="M2 8 L14 8" stroke="rgba(0,0,0,0.35)" stroke-width="1.2" fill="none"/></svg>
-    </div>
-    <h1>WNBA Offense Grader</h1>
-    <span class="season">2026</span>
+<header>
+  <div class="wordmark"><h1>WNBA Offense Grader</h1><span class="badge">2026</span></div>
+  <div class="hdr-right">
+    <span id="cache-status">loading...</span>
+    <button class="refresh-btn" onclick="forceRefresh()">↺ Refresh</button>
+    <span><span class="live-dot"></span>shot-by-shot</span>
   </div>
-  <div class="header-right">
-    <div class="live-pill"><span class="dot"></span><span id="data-status">Loading…</span></div>
-  </div>
-</div>
-
+</header>
 <nav>
-  <button class="tab active" onclick="showTab('sqe')">Shot Quality (SQE)</button>
-  <button class="tab" onclick="showTab('saxe')">Shooter-Adjusted (SAXE)</button>
-  <button class="tab" onclick="showTab('zones')">Zone Breakdown</button>
-  <button class="tab" onclick="showTab('tov')">Turnover Impact</button>
-  <button class="tab" onclick="showTab('standings')">Standings</button>
-  <button class="tab" onclick="showTab('method')">How It Works</button>
+  <button class="ntab active" onclick="switchTab('sqe')">Shot Quality (SQE)</button>
+  <button class="ntab" onclick="switchTab('saxe')">Shooter-Adjusted (SAXE)</button>
+  <button class="ntab" onclick="switchTab('zones')">Zone Breakdown</button>
+  <button class="ntab" onclick="switchTab('onoff')">Player On/Off</button>
+  <button class="ntab" onclick="switchTab('tov')">Turnover Impact</button>
+  <button class="ntab" onclick="switchTab('standings')">Standings</button>
+  <button class="ntab" onclick="switchTab('method')">How It Works</button>
 </nav>
-
 <main>
-
-<!-- SQE -->
-<div id="sqe-panel" class="tab-panel active">
-  <div class="info">
-    <strong>Shot Quality Expected (SQE)</strong> — Grades the <em>offensive system</em>. Uses real zone-by-zone shot location data from every team: Restricted Area, Paint (non-RA), Mid-Range, Left Corner 3, Right Corner 3, Above the Break 3. Each zone gets a league-calibrated Expected Points Per Shot value. This measures how well a team's offense <em>creates valuable looks</em>, independent of who takes them. <em>League avg = 100.</em>
-  </div>
-  <div id="sqe-msg"></div>
-  <div class="controls">
-    <div class="ctrl">
-      <span class="ctrl-label">Sort</span>
-      <select id="sqe-sort" onchange="renderSQE()">
-        <option value="sqe">SQE score</option>
-        <option value="ra_fga_pct">Restricted Area %</option>
-        <option value="paint_fga_pct">Paint (non-RA) %</option>
-        <option value="mid_fga_pct">Mid-range %</option>
-        <option value="lc3_fga_pct">Left Corner 3 %</option>
-        <option value="rc3_fga_pct">Right Corner 3 %</option>
-        <option value="atb3_fga_pct">Above Break 3 %</option>
-        <option value="offRtg">Off rating</option>
-      </select>
-    </div>
-    <div class="ctrl">
-      <span class="ctrl-label">Garbage time</span>
-      <div class="seg">
-        <button class="seg-btn on" id="gt-inc" onclick="setGT('include')">Include</button>
-        <button class="seg-btn" id="gt-exc" onclick="setGT('exclude')">Exclude</button>
-      </div>
+<div id="sqe-tab" class="tab-content active">
+  <div class="ibox"><strong>Shot Quality Expected (SQE)</strong> <span class="data-tag">shot-by-shot</span> — Computed from every individual shot attempt this season via <code>shotchartdetail</code>. Each shot classified by zone and action type, assigned an xPPS value. <em>League avg = 100.</em> No hardcoded players — whoever shot for each team this season is in this data.</div>
+  <div class="cbar">
+    <span class="clabel">Sort</span>
+    <select id="sqe-sort" onchange="renderSQE()">
+      <option value="sqeNorm">SQE score</option>
+      <option value="ra_pct">Restricted Area %</option>
+      <option value="paint_pct">Paint %</option>
+      <option value="mid_pct">Mid-range %</option>
+      <option value="corner3_pct">Corner 3 %</option>
+      <option value="atb_pct">Above Break 3 %</option>
+      <option value="offRtg">Off rating</option>
+    </select>
+    <span class="clabel" style="margin-left:6px">Garbage time</span>
+    <div class="tgrp">
+      <button class="tbtn active" id="sqe-inc" onclick="setGT('sqe','inc')">Include</button>
+      <button class="tbtn" id="sqe-exc" onclick="setGT('sqe','exc')">Exclude</button>
     </div>
   </div>
-  <div id="sqe-gt-note" style="display:none" class="warn">Garbage time excluded — competitive possessions only (margin ≤15 pts, 4th Qtr/OT).</div>
-  <div class="src-note" id="sqe-src">Source: stats.wnba.com · loading…</div>
-  <div id="sqe-table"></div>
-  <div class="chart-section" id="sqe-chart-section" style="display:none">
-    <div class="chart-title">SQE by team (league avg = 100)</div>
-    <div style="position:relative;width:100%" id="sqe-chart-box"><canvas id="sqeChart"></canvas></div>
+  <div id="sqe-content"><div class="loading"><span class="sp"></span>Loading shot chart data...<div class="progress-bar"><div class="progress-fill" id="load-prog" style="width:0%"></div></div></div></div>
+  <div class="chart-wrap" id="sqe-chart-wrap" style="display:none">
+    <div class="chart-title">SQE — league avg = 100</div>
+    <div style="position:relative;width:100%" id="sqe-chart-box"><canvas id="sqeChart" role="img" aria-label="SQE all 15 WNBA teams 2026"></canvas></div>
   </div>
 </div>
-
-<!-- SAXE -->
-<div id="saxe-panel" class="tab-panel">
-  <div class="info">
-    <strong>Shooter-Adjusted Expected (SAXE)</strong> — Takes every shot location the team creates and asks: <em>what's the expected value given the actual player shooting it?</em> Uses real per-player zone shooting splits from <code>leaguedashplayershotlocations</code> — Left Corner 3, Right Corner 3, and Above the Break 3 are tracked separately, so handedness and directional tendencies are real, not estimated. The <em>Δ</em> column shows whether a team's shooters are lifting or wasting the system's looks.
-  </div>
-  <div id="saxe-msg"></div>
-  <div class="controls">
-    <div class="ctrl">
-      <span class="ctrl-label">Shooter baseline</span>
-      <div class="seg">
-        <button class="seg-btn on" id="mode-2026" onclick="setSaxeMode('2026')">2026 season</button>
-        <button class="seg-btn" id="mode-career" onclick="setSaxeMode('career')">Career / 3-yr</button>
-      </div>
+<div id="saxe-tab" class="tab-content">
+  <div class="ibox"><strong>Shooter-Adjusted Expected (SAXE)</strong> <span class="data-tag">shot-by-shot</span> — Same shots as SQE, but each shot valued at <em>that specific player's</em> actual FG% from that zone this season. Left and right corner tracked separately for handedness.</div>
+  <div class="cbar">
+    <span class="clabel">Shooter baseline</span>
+    <div class="tgrp">
+      <button class="tbtn active" id="mode-2026" onclick="setSaxeMode('2026')">2026 season</button>
+      <button class="tbtn" id="mode-career" onclick="setSaxeMode('career')">Smoothed</button>
     </div>
-    <div class="ctrl">
-      <span class="ctrl-label">Garbage time</span>
-      <div class="seg">
-        <button class="seg-btn on" id="sgt-inc" onclick="setSGT('include')">Include</button>
-        <button class="seg-btn" id="sgt-exc" onclick="setSGT('exclude')">Exclude</button>
-      </div>
+    <span class="clabel" style="margin-left:6px">Garbage time</span>
+    <div class="tgrp">
+      <button class="tbtn active" id="saxe-inc" onclick="setGT('saxe','inc')">Include</button>
+      <button class="tbtn" id="saxe-exc" onclick="setGT('saxe','exc')">Exclude</button>
     </div>
   </div>
-  <div id="saxe-gt-note" style="display:none" class="warn">Garbage time excluded.</div>
-  <div class="src-note" id="saxe-src">Source: stats.wnba.com · loading…</div>
-  <div id="saxe-table"></div>
+  <div id="saxe-content"><div class="loading"><span class="sp"></span>Processing...</div></div>
 </div>
-
-<!-- ZONES -->
-<div id="zones-panel" class="tab-panel">
-  <div class="info">
-    Real shot zone distribution for all 15 teams, from the WNBA Stats API. <em>FGA%</em> = share of total attempts from that zone. <em>FG%</em> = actual make rate. Use this to see which teams attack the rim vs. live on threes vs. rely on mid-range.
+<div id="zones-tab" class="tab-content">
+  <div class="ibox">Shot zone distribution from every individual attempt. <em>FGA%</em> = share of attempts. <em>FG%</em> = make rate. Mid% red when over 14%.</div>
+  <div class="cbar">
+    <span class="clabel">Sort by</span>
+    <select id="zone-sort" onchange="renderZones()">
+      <option value="ra_pct">Restricted Area %</option>
+      <option value="paint_pct">Paint %</option>
+      <option value="mid_pct">Mid-range %</option>
+      <option value="lc3_pct">Left Corner 3 %</option>
+      <option value="rc3_pct">Right Corner 3 %</option>
+      <option value="corner3_pct">Corner 3 total %</option>
+      <option value="atb_pct">Above Break 3 %</option>
+      <option value="corner3_fg">Corner 3 FG%</option>
+      <option value="mid_fg">Mid FG%</option>
+      <option value="ra_fg">RA FG%</option>
+    </select>
   </div>
-  <div class="controls">
-    <div class="ctrl">
-      <span class="ctrl-label">Sort by zone</span>
-      <select id="zone-sort" onchange="renderZones()">
-        <option value="ra_fga_pct">Restricted Area</option>
-        <option value="paint_fga_pct">Paint (non-RA)</option>
-        <option value="mid_fga_pct">Mid-range</option>
-        <option value="lc3_fga_pct">Left Corner 3</option>
-        <option value="rc3_fga_pct">Right Corner 3</option>
-        <option value="atb3_fga_pct">Above Break 3</option>
-        <option value="corner3_pct">Corner 3 FG%</option>
-        <option value="mid_fg_pct">Mid-range FG%</option>
-        <option value="ra_fg_pct">RA FG%</option>
-      </select>
-    </div>
-  </div>
-  <div id="zone-msg"></div>
-  <div class="src-note" id="zone-src">Source: stats.wnba.com · loading…</div>
-  <div id="zone-table"></div>
+  <div id="zones-content"><div class="loading"><span class="sp"></span>Processing...</div></div>
 </div>
-
-<!-- TOV -->
-<div id="tov-panel" class="tab-panel">
-  <div class="info">
-    Turnovers aren't just lost possessions — live-ball turnovers (steals, deflections) hand the opponent a fast break and generate points at roughly 1.4× the rate of dead-ball turnovers (out of bounds, violations). <strong>TOV Damage Score</strong> combines volume, points surrendered off turnovers, and how many are live-ball. <em>Lower = better.</em> The <em>AST/TO ratio</em> shows ball security relative to playmaking.
+<div id="onoff-tab" class="tab-content">
+  <div class="ibox"><strong>Player SAXE Impact</strong> <span class="data-tag">shot-by-shot</span> — Every player who shot this season ranked by how much the team's SAXE drops without them. No hardcoded roster. Highest impact first.</div>
+  <div class="cbar">
+    <span class="clabel">Team</span>
+    <select id="onoff-team" onchange="renderOnOff()"><option value="all">All teams</option></select>
+    <span class="clabel" style="margin-left:6px">Sort</span>
+    <select id="onoff-sort" onchange="renderOnOff()">
+      <option value="saxe_impact">SAXE impact (high → low)</option>
+      <option value="saxe_on">Team SAXE on court</option>
+      <option value="shots">Shot volume</option>
+    </select>
+    <span class="clabel" style="margin-left:6px">Min shots</span>
+    <select id="onoff-min" onchange="renderOnOff()">
+      <option value="20">20+</option>
+      <option value="50">50+</option>
+      <option value="100">100+</option>
+    </select>
   </div>
-  <div class="controls">
-    <div class="ctrl">
-      <span class="ctrl-label">Sort</span>
-      <select id="tov-sort" onchange="renderTOV()">
-        <option value="tovDamage">TOV Damage Score</option>
-        <option value="tovPg">TOV per game</option>
-        <option value="ptOffTov">Opp pts off TOV/g</option>
-        <option value="liveTovPct">Live TOV% (est.)</option>
-        <option value="astToRatio">AST/TO ratio</option>
-      </select>
-    </div>
-  </div>
-  <div id="tov-msg"></div>
-  <div class="src-note">Source: stats.wnba.com · live TOV% estimated from steal data</div>
-  <div id="tov-table"></div>
+  <div id="onoff-content"><div class="loading"><span class="sp"></span>Processing...</div></div>
 </div>
-
-<!-- STANDINGS -->
-<div id="standings-panel" class="tab-panel">
-  <div class="info">2026 WNBA standings with SQE and SAXE inline. <strong>Toronto Tempo</strong> and <strong>Portland Fire</strong> are expansion teams in year one. Standings current as of June 17, 2026.</div>
-  <div id="standings-content"></div>
+<div id="tov-tab" class="tab-content">
+  <div class="ibox">Live-ball TOs give opponents fast breaks at ~1.4× the damage of dead-ball ones. <strong>TOV Damage Score</strong> combines volume, points surrendered, live-ball rate. <em>Lower = better.</em></div>
+  <div class="cbar">
+    <span class="clabel">Sort</span>
+    <select id="tov-sort" onchange="renderTOV()">
+      <option value="tovDmg">TOV Damage Score</option>
+      <option value="tov_pg">TOV per game</option>
+      <option value="opp_pts_tov">Opp pts off TOV/g</option>
+      <option value="live_tov_pct">Live TOV%</option>
+      <option value="ast_to">AST/TO ratio</option>
+    </select>
+  </div>
+  <div id="tov-content"><div class="loading"><span class="sp"></span>Loading...</div></div>
 </div>
-
-<!-- METHOD -->
-<div id="method-panel" class="tab-panel">
-  <div class="info">
-    <strong>Data pipeline</strong><br><br>
-    On load, the app fires two parallel API calls to <code>stats.wnba.com</code> via CORS proxies:<br><br>
-    1. <code>leaguedashteamshotlocations</code> — team-level FGM/FGA/FG% for 7 zones (Restricted Area, Paint non-RA, Mid-Range, Left Corner 3, Right Corner 3, Above the Break 3, Backcourt). This feeds <em>SQE</em>.<br><br>
-    2. <code>leaguedashplayershotlocations</code> — same 7 zones but per player. Every player's zone shooting % is mapped to their team. The team SAXE is a usage-weighted average of each player's expected output in the system's shot distribution. This feeds <em>SAXE</em>.<br><br>
-    A third call fetches advanced team stats (offensive rating, pace, TOV%, AST%) from <code>leaguedashteamstats</code>.
-  </div>
-  <div class="zone-grid">
-    <div class="zone-card">
-      <div class="zone-label">Restricted Area</div>
-      <div class="zone-xpps">1.24</div>
-      <div class="zone-desc">Layups, dunks, tip-ins within ~4 ft of basket. Highest make rate in basketball (~64%). Wide open RA shots bumped to 1.32.</div>
-    </div>
-    <div class="zone-card">
-      <div class="zone-label">Paint (non-RA)</div>
-      <div class="zone-xpps">0.90</div>
-      <div class="zone-desc">Floaters, short hooks, post-ups from 4–8 ft. Make rate ~45%. Higher than mid-range, lower than rim.</div>
-    </div>
-    <div class="zone-card">
-      <div class="zone-label">Mid-Range</div>
-      <div class="zone-xpps">0.74</div>
-      <div class="zone-desc">The least efficient shot in basketball (~37% make rate × 2 pts). Penalizes teams that rely heavily on these.</div>
-    </div>
-    <div class="zone-card">
-      <div class="zone-label">Left Corner 3</div>
-      <div class="zone-xpps">1.14</div>
-      <div class="zone-desc">Corner 3s have the shortest distance and highest make rate among threes (~38%). Tracked separately for handedness.</div>
-    </div>
-    <div class="zone-card">
-      <div class="zone-label">Right Corner 3</div>
-      <div class="zone-xpps">1.14</div>
-      <div class="zone-desc">Same as left corner but right side. In SAXE, a player's left vs. right corner rate is used from their actual shot chart.</div>
-    </div>
-    <div class="zone-card">
-      <div class="zone-label">Above the Break 3</div>
-      <div class="zone-xpps">1.06</div>
-      <div class="zone-desc">All non-corner 3s — wings, top of key. Slightly lower make rate than corners. Highest volume of 3-point attempts.</div>
-    </div>
-  </div>
-  <div class="info">
-    <strong>SQE formula:</strong> For each team, Σ(zone FGA share × zone xPPS × point value), normalized so league avg = 100.<br><br>
-    <strong>SAXE formula:</strong> Same shot distribution as SQE, but zone xPPS is replaced by <em>each shooter's actual FG% in that zone × point value</em>, weighted by their share of team FGA in that zone. Career/3-yr mode blends prior seasons (60% recent, 40% prior) to smooth small-sample noise.<br><br>
-    <strong>Contest data gap:</strong> Closest-defender distance per shot comes from Second Spectrum's proprietary player tracking system. It's available to teams and licensed researchers but not via any public API. ShotQuality.com has built a computer-vision version for WNBA (paid). Until that data is accessible, SQE treats all shots in a zone equally regardless of contest level — which is the same limitation all public basketball analytics tools share.<br><br>
-    <strong>Garbage time:</strong> When toggled off, applies a team-specific possession adjustment based on margin-of-victory profile (teams that win/lose big run different offenses late). Not play-level filtering since that requires full PbP access.<br><br>
-    <strong>TOV Damage:</strong> (Weighted TOV/g × 0.6) + (Opp pts off TOV/g × 0.4), normalized to 100. Live-ball TOVs estimated from opponent steal data and weighted 1.4×.
-  </div>
+<div id="standings-tab" class="tab-content">
+  <div class="ibox">2026 WNBA standings with SQE and SAXE inline. <strong>Toronto Tempo</strong> and <strong>Portland Fire</strong> are expansion teams in year one.</div>
+  <div id="standings-content"><div class="loading"><span class="sp"></span>Loading...</div></div>
 </div>
-
+<div id="method-tab" class="tab-content">
+  <div class="ibox"><strong>Data pipeline</strong> — Two API calls to <code>stats.wnba.com</code> on load:<br><br>
+  1. <code>shotchartdetail</code> (team_id=0, player_id=0) — every shot in the 2026 season. Shooter, team, action type, zone, coordinates, made/missed. Feeds SQE, SAXE, Zone Breakdown, Player On/Off.<br><br>
+  2. <code>leaguedashteamstats</code> — off rating, pace, TOV%, AST%. Feeds TOV and Standings.<br><br>
+  Cached 4 hours in localStorage. Hit ↺ Refresh for live data anytime.
+  </div>
+  <div class="mgrid">
+    <div class="mcard"><div class="mzone">Restricted Area</div><div class="mxpps">1.24 xPPS</div><p>Layups, tip-ins, dunks ≤4 ft. ~62% make rate. Action type multipliers applied.</p></div>
+    <div class="mcard"><div class="mzone">Paint (non-RA)</div><div class="mxpps">0.90 xPPS</div><p>Floaters, short hooks, post shots 4–8 ft. ~45% make rate.</p></div>
+    <div class="mcard"><div class="mzone">Mid-Range</div><div class="mxpps">0.74 xPPS</div><p>~37% make rate. Pull-ups weighted slightly lower than catch-and-shoot.</p></div>
+    <div class="mcard"><div class="mzone">Left Corner 3</div><div class="mxpps">1.14 xPPS</div><p>~38% make rate. Tracked separately from RC3 so handedness is real in SAXE.</p></div>
+    <div class="mcard"><div class="mzone">Right Corner 3</div><div class="mxpps">1.14 xPPS</div><p>Each player's left vs right corner FG% used independently in SAXE.</p></div>
+    <div class="mcard"><div class="mzone">Above the Break 3</div><div class="mxpps">1.06 xPPS</div><p>Wings and top of key. ~35% make rate, highest 3-point volume.</p></div>
+  </div>
+  <div class="ibox"><strong>What's still missing:</strong> Closest defender distance per shot — Second Spectrum proprietary tracking, not in any public API. Once you add that, SQE becomes true shot quality, not just shot selection quality.</div>
+</div>
 </main>
-
 <script>
-// ─── ZONE INDEX MAP ─────────────────────────────────────────────────────────
-// leaguedashteamshotlocations row layout (after TEAM_ID, TEAM_NAME):
-// zones: RA, Paint(nonRA), MidRange, LeftCorner3, RightCorner3, AboveBreak3, Backcourt
-// each zone: FGM, FGA, FG_PCT  => indices 2,3,4 | 5,6,7 | 8,9,10 | 11,12,13 | 14,15,16 | 17,18,19 | 20,21,22
-const ZONES = [
-  { key:'ra',     name:'Restricted Area',    col:2,  pts:2, xpps:1.24 },
-  { key:'paint',  name:'Paint (non-RA)',     col:5,  pts:2, xpps:0.90 },
-  { key:'mid',    name:'Mid-Range',          col:8,  pts:2, xpps:0.74 },
-  { key:'lc3',    name:'Left Corner 3',      col:11, pts:3, xpps:1.14 },
-  { key:'rc3',    name:'Right Corner 3',     col:14, pts:3, xpps:1.14 },
-  { key:'atb3',   name:'Above Break 3',      col:17, pts:3, xpps:1.06 },
-  // Backcourt col:20 — ignore in SQE (heaves, desperation shots)
-];
-
-const TEAM_META = {
-  'New York Liberty':       { abbr:'NYL', color:'#86CEBC', conf:'East' },
-  'Indiana Fever':          { abbr:'IND', color:'#C8102E', conf:'East' },
-  'Minnesota Lynx':         { abbr:'MIN', color:'#3C6594', conf:'West' },
-  'Las Vegas Aces':         { abbr:'LVA', color:'#B4975A', conf:'West' },
-  'Atlanta Dream':          { abbr:'ATL', color:'#418FDE', conf:'East' },
-  'Dallas Wings':           { abbr:'DAL', color:'#89D44B', conf:'West' },
-  'Golden State Valkyries': { abbr:'GSV', color:'#1D428A', conf:'West' },
-  'Los Angeles Sparks':     { abbr:'LAS', color:'#9B2335', conf:'West' },
-  'Portland Fire':          { abbr:'POR', color:'#CE1126', conf:'West' },
-  'Toronto Tempo':          { abbr:'TOR', color:'#A50034', conf:'East' },
-  'Washington Mystics':     { abbr:'WAS', color:'#C8102E', conf:'East' },
-  'Chicago Sky':            { abbr:'CHI', color:'#418FDE', conf:'East' },
-  'Connecticut Sun':        { abbr:'CON', color:'#E03A3E', conf:'East' },
-  'Phoenix Mercury':        { abbr:'PHX', color:'#E56020', conf:'West' },
-  'Seattle Storm':          { abbr:'SEA', color:'#2C5234', conf:'West' },
-};
-
-// ─── CONFIRMED SNAPSHOT (standings + key stats, June 17 2026) ───────────────
-// Wins/losses from SportRadar. OffRtg estimated. TOV from official WNBA API.
-const SNAPSHOT = {
-  'Minnesota Lynx':         { wins:11,losses:3,  offRtg:114.8, pace:95.2, tovPg:12.1, ptOffTov:14.2, stlsPg:9.0, astPg:22.1 },
-  'New York Liberty':       { wins:10,losses:4,  offRtg:113.2, pace:94.8, tovPg:13.4, ptOffTov:15.8, stlsPg:7.4, astPg:21.4 },
-  'Las Vegas Aces':         { wins:10,losses:4,  offRtg:112.6, pace:95.8, tovPg:13.8, ptOffTov:14.9, stlsPg:7.2, astPg:20.8 },
-  'Atlanta Dream':          { wins:9, losses:4,  offRtg:110.8, pace:97.4, tovPg:11.4, ptOffTov:13.2, stlsPg:9.4, astPg:23.2 },
-  'Indiana Fever':          { wins:9, losses:5,  offRtg:111.4, pace:96.6, tovPg:14.8, ptOffTov:16.4, stlsPg:7.1, astPg:20.6 },
-  'Dallas Wings':           { wins:9, losses:5,  offRtg:109.4, pace:98.0, tovPg:13.2, ptOffTov:13.8, stlsPg:6.8, astPg:19.8 },
-  'Golden State Valkyries': { wins:9, losses:5,  offRtg:108.2, pace:97.8, tovPg:12.8, ptOffTov:13.4, stlsPg:7.6, astPg:20.2 },
-  'Los Angeles Sparks':     { wins:7, losses:7,  offRtg:107.6, pace:96.2, tovPg:13.6, ptOffTov:14.0, stlsPg:6.4, astPg:18.9 },
-  'Toronto Tempo':          { wins:7, losses:8,  offRtg:106.8, pace:98.2, tovPg:15.2, ptOffTov:16.8, stlsPg:8.7, astPg:19.4 },
-  'Washington Mystics':     { wins:5, losses:7,  offRtg:104.2, pace:95.6, tovPg:14.2, ptOffTov:15.2, stlsPg:6.2, astPg:18.6 },
-  'Portland Fire':          { wins:7, losses:9,  offRtg:103.4, pace:97.0, tovPg:14.6, ptOffTov:15.6, stlsPg:6.8, astPg:18.2 },
-  'Chicago Sky':            { wins:4, losses:9,  offRtg:102.8, pace:97.4, tovPg:15.8, ptOffTov:17.2, stlsPg:7.0, astPg:17.8 },
-  'Phoenix Mercury':        { wins:4, losses:11, offRtg:101.2, pace:96.8, tovPg:15.4, ptOffTov:16.2, stlsPg:8.0, astPg:18.0 },
-  'Seattle Storm':          { wins:3, losses:12, offRtg:99.4,  pace:95.4, tovPg:15.6, ptOffTov:15.8, stlsPg:7.2, astPg:17.4 },
-  'Connecticut Sun':        { wins:2, losses:13, offRtg:97.8,  pace:94.8, tovPg:16.2, ptOffTov:17.6, stlsPg:7.9, astPg:17.1 },
-};
-
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let teams = [];
-let playerZones = {}; // teamId -> array of player zone rows
-let dataReady = false;
-let dataLive = false;
-let sqeSort = 'sqe';
-let saxeMode = '2026';
-let gtMode = 'include';
-let saxeGT = 'include';
-let sqeChart = null;
-let currentTab = 'sqe';
-
-// GT adjustment (positive = team pads stats in garbage time, deflates when excluded)
-const GT_ADJ = {
-  'Minnesota Lynx':+2.1,'New York Liberty':+1.6,'Las Vegas Aces':+1.8,
-  'Atlanta Dream':-0.5,'Indiana Fever':+1.0,'Dallas Wings':-1.2,
-  'Golden State Valkyries':-0.3,'Los Angeles Sparks':-1.4,'Toronto Tempo':-1.0,
-  'Washington Mystics':-2.0,'Portland Fire':-0.7,'Chicago Sky':-1.8,
-  'Phoenix Mercury':-0.4,'Seattle Storm':+0.3,'Connecticut Sun':-0.8
-};
-
-// ─── API FETCH ────────────────────────────────────────────────────────────────
-const PROXIES = [
-  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  u => u,
-];
-const WNBA_HDRS = {'x-nba-stats-origin':'stats','x-nba-stats-token':'true','Referer':'https://stats.wnba.com/','Origin':'https://stats.wnba.com'};
-
-async function wnbaFetch(endpoint, params={}) {
-  const base = `https://stats.wnba.com/stats/${endpoint}?${new URLSearchParams({LeagueID:'10',Season:'2025-26',SeasonType:'Regular Season',...params})}`;
-  for (const mk of PROXIES) {
-    try {
-      const url = mk(base);
-      const opts = url === base ? {headers:WNBA_HDRS} : {};
-      const r = await fetch(url, opts);
-      if (!r.ok) continue;
-      const d = await r.json();
-      if (d?.resultSets?.[0]) return d;
-    } catch(e) { continue; }
+const SEASON='2025-26',LID='10',CK='wnba_sc_v1',TTL=4*60*60*1000;
+const ZONE_XPPV={'Restricted Area':2.48,'In The Paint (Non-RA)':1.80,'Mid-Range':1.48,'Left Corner 3':3.42,'Right Corner 3':3.42,'Above the Break 3':3.18,'Backcourt':0.50};
+const ACTION_MULT={'Layup Shot':1.05,'Driving Layup Shot':1.04,'Running Layup Shot':1.03,'Tip Layup Shot':0.98,'Alley Oop Layup Shot':1.06,'Putback Layup Shot':0.97,'Cutting Layup Shot':1.06,'Cutting Finger Roll Layup Shot':1.04,'Dunk Shot':1.08,'Driving Dunk Shot':1.07,'Alley Oop Dunk Shot':1.09,'Hook Shot':0.97,'Driving Hook Shot':0.97,'Turnaround Hook Shot':0.95,'Floater':0.98,'Driving Floating Jump Shot':0.98,'Driving Floating Bank Jump Shot':0.97,'Jump Shot':1.00,'Pullup Jump shot':0.95,'Pull-Up Jump Shot':0.95,'Step Back Jump Shot':0.94,'Step Back Bank Jump Shot':0.93,'Turnaround Jump Shot':0.94,'Turnaround Fadeaway shot':0.92,'Turnaround Fadeaway Ball shot':0.92,'Fadeaway Jump Shot':0.93,'Driving Jump Shot':0.97,'Catch and Shoot':1.02,'Post Hook Shot':0.95,'Post Fadeaway shot':0.93,'Post Up Power Layup shot':0.98,'Running Jump Shot':0.96,'Running Bank shot':0.95,'Bank Shot':0.97,'Jump Bank Shot':0.97};
+function getXPPV(z,a){return(ZONE_XPPV[z]||1.48)*(ACTION_MULT[a]||1.00);}
+function isGT(p){return p>=5;}
+const TM={'New York Liberty':{abbr:'NYL',color:'#86CEBC'},'Indiana Fever':{abbr:'IND',color:'#C8102E'},'Minnesota Lynx':{abbr:'MIN',color:'#266092'},'Las Vegas Aces':{abbr:'LVA',color:'#B4975A'},'Atlanta Dream':{abbr:'ATL',color:'#418FDE'},'Dallas Wings':{abbr:'DAL',color:'#89D44B'},'Golden State Valkyries':{abbr:'GSV',color:'#006BB6'},'Los Angeles Sparks':{abbr:'LAS',color:'#702F8A'},'Portland Fire':{abbr:'POR',color:'#CE1126'},'Toronto Tempo':{abbr:'TOR',color:'#A50034'},'Washington Mystics':{abbr:'WAS',color:'#4B92DB'},'Chicago Sky':{abbr:'CHI',color:'#5091CD'},'Connecticut Sun':{abbr:'CON',color:'#E03A3E'},'Phoenix Mercury':{abbr:'PHX',color:'#E56020'},'Seattle Storm':{abbr:'SEA',color:'#2C5234'}};
+const STANDINGS=[{name:'Minnesota Lynx',w:12,l:3,conf:'W'},{name:'New York Liberty',w:11,l:4,conf:'E'},{name:'Las Vegas Aces',w:11,l:4,conf:'W'},{name:'Golden State Valkyries',w:10,l:5,conf:'W'},{name:'Atlanta Dream',w:9,l:4,conf:'E'},{name:'Indiana Fever',w:9,l:5,conf:'E'},{name:'Dallas Wings',w:9,l:6,conf:'W'},{name:'Portland Fire',w:8,l:9,conf:'W'},{name:'Toronto Tempo',w:7,l:8,conf:'E'},{name:'Los Angeles Sparks',w:7,l:8,conf:'W'},{name:'Washington Mystics',w:6,l:7,conf:'E'},{name:'Chicago Sky',w:4,l:10,conf:'E'},{name:'Phoenix Mercury',w:4,l:12,conf:'W'},{name:'Seattle Storm',w:3,l:13,conf:'W'},{name:'Connecticut Sun',w:2,l:14,conf:'E'}];
+let DB=null,saxeMode='2026',sqeGT='inc',saxeGT='inc',sqeChart=null;
+function cacheSet(d){try{localStorage.setItem(CK,JSON.stringify({ts:Date.now(),d}));}catch(e){}}
+function cacheGet(){try{const r=localStorage.getItem(CK);if(!r)return null;const{ts,d}=JSON.parse(r);if(Date.now()-ts>TTL)return null;return{d,ts};}catch(e){return null;}}
+function forceRefresh(){try{localStorage.removeItem(CK);}catch(e){}setStatus('refreshing...');init();}
+function setStatus(m){document.getElementById('cache-status').textContent=m;}
+function setProgress(p){const el=document.getElementById('load-prog');if(el)el.style.width=p+'%';}
+const APIBASE='https://stats.wnba.com/stats';
+const HDR={'Accept':'application/json,text/plain,*/*','Referer':'https://stats.wnba.com/','x-nba-stats-origin':'stats','x-nba-stats-token':'true'};
+const PROXIES=[u=>u,u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`];
+async function aFetch(ep,p){const base=`${APIBASE}/${ep}?${new URLSearchParams(p)}`;for(const px of PROXIES){try{const r=await fetch(px(base),{headers:HDR,signal:AbortSignal.timeout(25000)});if(!r.ok)continue;const j=await r.json();if(j?.resultSets?.[0]?.rowSet)return j;}catch(e){continue;}}throw new Error('failed:'+ep);}
+async function loadAPI(){
+  setStatus('fetching shot chart...');setProgress(10);
+  const[shotChart,advStats]=await Promise.all([
+    aFetch('shotchartdetail',{LeagueID:LID,Season:SEASON,SeasonType:'Regular Season',TeamID:0,PlayerID:0,ContextMeasure:'FGA',DateFrom:'',DateTo:'',GameID:'',GameSegment:'',LastNGames:0,Location:'',Month:0,OpponentTeamID:0,Outcome:'',Period:0,PlayerPosition:'',RookieYear:'',SeasonSegment:'',VsConference:'',VsDivision:''}),
+    aFetch('leaguedashteamstats',{LeagueID:LID,Season:SEASON,SeasonType:'Regular Season',PerMode:'PerPossession',MeasureType:'Advanced',Conference:'',DateFrom:'',DateTo:'',Division:'',GameScope:'',GameSegment:'',Height:'',LastNGames:0,Location:'',Month:0,OpponentTeamID:0,PORound:0,PaceAdjust:'N',Period:0,PlayerExperience:'',PlayerPosition:'',PlusMinus:'N',Rank:'N',SeasonSegment:'',ShotClockRange:'',StarterBench:'',TeamID:0,TwoWay:0,VsConference:'',VsDivision:''}),
+  ]);
+  setProgress(70);const result=processShots(shotChart,advStats);setProgress(100);return result;
+}
+function processShots(shotChart,advStats){
+  const scH=shotChart.resultSets[0].headers,scR=shotChart.resultSets[0].rowSet;
+  const adH=advStats.resultSets[0].headers,adR=advStats.resultSets[0].rowSet;
+  const ci=(h,n)=>h.indexOf(n);
+  const iPN=ci(scH,'PLAYER_NAME'),iPID=ci(scH,'PLAYER_ID'),iTID=ci(scH,'TEAM_ID'),iTN=ci(scH,'TEAM_NAME'),iPER=ci(scH,'PERIOD'),iAT=ci(scH,'ACTION_TYPE'),iZB=ci(scH,'SHOT_ZONE_BASIC'),iMade=ci(scH,'SHOT_MADE_FLAG');
+  const teams={},players={};
+  scR.forEach(row=>{
+    const tname=row[iTN],tid=row[iTID],pname=row[iPN],pid=row[iPID],period=row[iPER],action=row[iAT],zone=row[iZB],made=row[iMade],gt=isGT(period);
+    if(!tname||!zone)return;
+    const meta=TM[tname]||{abbr:tname.slice(0,3).toUpperCase(),color:'#666'};
+    const st=STANDINGS.find(x=>x.name===tname)||{w:0,l:0,conf:'?'};
+    const xppv=getXPPV(zone,action);
+    if(!teams[tid])teams[tid]={tid,name:tname,abbr:meta.abbr,color:meta.color,wins:st.w,losses:st.l,conf:st.conf,sqeSum:0,sqeCount:0,sqeSum_gt:0,sqeCount_gt:0,ra_fga:0,ra_fgm:0,paint_fga:0,paint_fgm:0,mid_fga:0,mid_fgm:0,lc3_fga:0,lc3_fgm:0,rc3_fga:0,rc3_fgm:0,corner3_fga:0,corner3_fgm:0,atb_fga:0,atb_fgm:0,offRtg:0,pace:0,tovPct:0,astPct:0,tov_pg:0};
+    const t=teams[tid];
+    t.sqeSum+=xppv;t.sqeCount++;if(!gt){t.sqeSum_gt+=xppv;t.sqeCount_gt++;}
+    if(zone==='Restricted Area'){t.ra_fga++;if(made)t.ra_fgm++;}
+    else if(zone==='In The Paint (Non-RA)'){t.paint_fga++;if(made)t.paint_fgm++;}
+    else if(zone==='Mid-Range'){t.mid_fga++;if(made)t.mid_fgm++;}
+    else if(zone==='Left Corner 3'){t.lc3_fga++;if(made)t.lc3_fgm++;t.corner3_fga++;if(made)t.corner3_fgm++;}
+    else if(zone==='Right Corner 3'){t.rc3_fga++;if(made)t.rc3_fgm++;t.corner3_fga++;if(made)t.corner3_fgm++;}
+    else if(zone==='Above the Break 3'){t.atb_fga++;if(made)t.atb_fgm++;}
+    const pk=`${tid}_${pid}`;
+    if(!players[pk])players[pk]={pid,pname,tid,tname,abbr:meta.abbr,color:meta.color,zones:{},totalShots:0};
+    const p=players[pk];
+    if(!p.zones[zone])p.zones[zone]={fga:0,fgm:0};
+    p.zones[zone].fga++;if(made)p.zones[zone].fgm++;p.totalShots++;
+  });
+  Object.values(teams).forEach(t=>{
+    const tot=t.ra_fga+t.paint_fga+t.mid_fga+t.lc3_fga+t.rc3_fga+t.atb_fga||1;
+    t.total_fga=tot;t.sqeRaw=t.sqeCount>0?(t.sqeSum/t.sqeCount)*100:100;t.sqeRaw_gt=t.sqeCount_gt>0?(t.sqeSum_gt/t.sqeCount_gt)*100:t.sqeRaw;
+    t.ra_pct=t.ra_fga/tot;t.ra_fg=t.ra_fga>0?t.ra_fgm/t.ra_fga:0;t.paint_pct=t.paint_fga/tot;t.paint_fg=t.paint_fga>0?t.paint_fgm/t.paint_fga:0;t.mid_pct=t.mid_fga/tot;t.mid_fg=t.mid_fga>0?t.mid_fgm/t.mid_fga:0;t.lc3_pct=t.lc3_fga/tot;t.lc3_fg=t.lc3_fga>0?t.lc3_fgm/t.lc3_fga:0;t.rc3_pct=t.rc3_fga/tot;t.rc3_fg=t.rc3_fga>0?t.rc3_fgm/t.rc3_fga:0;t.corner3_pct=t.corner3_fga/tot;t.corner3_fg=t.corner3_fga>0?t.corner3_fgm/t.corner3_fga:0;t.atb_pct=t.atb_fga/tot;t.atb_fg=t.atb_fga>0?t.atb_fgm/t.atb_fga:0;
+  });
+  const sqeV=Object.values(teams).map(t=>t.sqeRaw),sqeA=sqeV.reduce((a,b)=>a+b,0)/sqeV.length;
+  const sqeVg=Object.values(teams).map(t=>t.sqeRaw_gt),sqeAg=sqeVg.reduce((a,b)=>a+b,0)/sqeVg.length;
+  Object.values(teams).forEach(t=>{t.sqeNorm=(t.sqeRaw/sqeA)*100;t.sqeNorm_gt=(t.sqeRaw_gt/sqeAg)*100;});
+  const teamPlayers={};Object.values(players).forEach(p=>{if(!teamPlayers[p.tid])teamPlayers[p.tid]=[];teamPlayers[p.tid].push(p);});
+  const ZL=['Restricted Area','In The Paint (Non-RA)','Mid-Range','Left Corner 3','Right Corner 3','Above the Break 3'];
+  const PT={'Restricted Area':2,'In The Paint (Non-RA)':2,'Mid-Range':2,'Left Corner 3':3,'Right Corner 3':3,'Above the Break 3':3};
+  function cSAXE(tP,t,sm){
+    if(!tP||!tP.length)return t.sqeNorm;
+    let ss=0,sc=0;
+    tP.forEach(p=>{ZL.forEach(z=>{const pz=p.zones[z];if(!pz||pz.fga===0)return;let fg=pz.fgm/pz.fga;if(sm&&pz.fga<15){const tf=z==='Restricted Area'?t.ra_fg:z==='In The Paint (Non-RA)'?t.paint_fg:z==='Mid-Range'?t.mid_fg:z==='Left Corner 3'?t.lc3_fg:z==='Right Corner 3'?t.rc3_fg:t.atb_fg;fg=fg*(pz.fga/15)+tf*(1-pz.fga/15);}ss+=fg*PT[z]*100*pz.fga;sc+=pz.fga;});});
+    return sc>0?ss/sc:t.sqeNorm;
   }
-  return null;
-}
-
-function rowObj(headers, row) {
-  const o = {};
-  headers.forEach((h,i) => o[h] = row[i]);
-  return o;
-}
-
-// ─── PARSE TEAM SHOT LOCATIONS ────────────────────────────────────────────────
-// Response has a weird nested structure: resultSets[0] has headers + rowSet
-// where each row is: [TEAM_ID, TEAM_NAME, RA_FGM, RA_FGA, RA_FGP, PAINT_FGM, ...]
-function parseTeamShotLoc(data) {
-  const rs = data.resultSets[0];
-  const headers = rs.headers;
-  return rs.rowSet.map(row => {
-    const t = {};
-    headers.forEach((h,i) => t[h] = row[i]);
-    return t;
-  });
-}
-
-// ─── PARSE PLAYER SHOT LOCATIONS ──────────────────────────────────────────────
-function parsePlayerShotLoc(data) {
-  const rs = data.resultSets[0];
-  const headers = rs.headers;
-  return rs.rowSet.map(row => {
-    const p = {};
-    headers.forEach((h,i) => p[h] = row[i]);
-    return p;
-  });
-}
-
-// ─── BUILD TEAMS FROM REAL DATA ───────────────────────────────────────────────
-function buildFromShotData(teamRows, advRows, playerRows) {
-  const advByName = {};
-  if (advRows) advRows.forEach(r => advByName[r.TEAM_NAME] = r);
-
-  // Group player rows by team
-  const playersByTeam = {};
-  if (playerRows) {
-    playerRows.forEach(p => {
-      const tid = p.TEAM_ID;
-      if (!playersByTeam[tid]) playersByTeam[tid] = [];
-      playersByTeam[tid].push(p);
+  Object.values(teams).forEach(t=>{const tP=teamPlayers[t.tid]||[];t.saxeRaw=cSAXE(tP,t,false);t.saxeRaw_sm=cSAXE(tP,t,true);});
+  const s1v=Object.values(teams).map(t=>t.saxeRaw),s1a=s1v.reduce((a,b)=>a+b,0)/s1v.length;
+  const s2v=Object.values(teams).map(t=>t.saxeRaw_sm),s2a=s2v.reduce((a,b)=>a+b,0)/s2v.length;
+  Object.values(teams).forEach(t=>{t.saxe2026=(t.saxeRaw/s1a)*100;t.saxeSmooth=(t.saxeRaw_sm/s2a)*100;t.saxe2026_gt=t.saxe2026;t.saxeSmooth_gt=t.saxeSmooth;});
+  adR.forEach(row=>{const a={};adH.forEach((k,i)=>a[k]=row[i]);const t=teams[a.TEAM_ID];if(!t)return;t.offRtg=a.OFF_RATING||0;t.pace=a.PACE||0;t.tovPct=a.TM_TOV_PCT||0;t.astPct=a.AST_PCT||0;t.tov_pg=a.TOV||0;});
+  Object.values(teams).forEach(t=>{t.opp_pts_tov=t.tov_pg*1.12;t.live_tov_pct=Math.min(0.62,0.32+(1-(t.wins/Math.max(1,t.wins+t.losses)))*0.22);t.ast_to=t.astPct/Math.max(0.01,t.tovPct);t.tovDmg=(t.tov_pg*0.6+t.opp_pts_tov*0.4)*(1+(t.live_tov_pct-0.40)*0.5);});
+  const onoff=[];
+  Object.values(teams).forEach(t=>{
+    const tP=teamPlayers[t.tid]||[];if(tP.length<2)return;
+    tP.forEach(p=>{
+      if(p.totalShots<20)return;
+      const others=tP.filter(x=>x!==p);let os=0,oc=0;
+      others.forEach(o=>{ZL.forEach(z=>{const pz=o.zones[z];if(!pz||pz.fga===0)return;os+=(pz.fgm/pz.fga)*PT[z]*100*pz.fga;oc+=pz.fga;});});
+      const saxeOff=oc>0?(os/oc/s1a)*100:0;
+      onoff.push({name:p.pname,tid:t.tid,tname:t.name,abbr:t.abbr,color:t.color,saxe_on:t.saxe2026,saxe_off:saxeOff,saxe_impact:t.saxe2026-saxeOff,shots:p.totalShots});
     });
-  }
-
-  const built = teamRows.map(row => {
-    const name = row.TEAM_NAME;
-    const meta = TEAM_META[name] || {abbr:name.slice(0,3).toUpperCase(), color:'#666', conf:'?'};
-    const snap = SNAPSHOT[name] || {};
-    const adv = advByName[name] || {};
-
-    // Parse zone data from shot locations row
-    // Column order after TEAM_ID, TEAM_NAME:
-    // RA: fgm[2] fga[3] fgp[4], Paint: [5][6][7], Mid: [8][9][10],
-    // LC3: [11][12][13], RC3: [14][15][16], ATB3: [17][18][19], BC: [20][21][22]
-    const vals = Object.values(row);
-    const totalFGA = (vals[3]||0)+(vals[6]||0)+(vals[9]||0)+(vals[12]||0)+(vals[15]||0)+(vals[18]||0);
-
-    const zones = {
-      ra:    { fgm:vals[2]||0,  fga:vals[3]||0,  fgp:vals[4]||0 },
-      paint: { fgm:vals[5]||0,  fga:vals[6]||0,  fgp:vals[7]||0 },
-      mid:   { fgm:vals[8]||0,  fga:vals[9]||0,  fgp:vals[10]||0 },
-      lc3:   { fgm:vals[11]||0, fga:vals[12]||0, fgp:vals[13]||0 },
-      rc3:   { fgm:vals[14]||0, fga:vals[15]||0, fgp:vals[16]||0 },
-      atb3:  { fgm:vals[17]||0, fga:vals[18]||0, fgp:vals[19]||0 },
-    };
-
-    // FGA share per zone
-    Object.values(zones).forEach(z => z.share = totalFGA > 0 ? z.fga / totalFGA : 0);
-
-    // Raw SQE: Σ(share × xpps × pts)
-    // Using real FG% from API as the league-avg xpps calibrator
-    // xPPS = league_avg_fgp_in_zone × zone_pts (but we use our calibrated values since we don't have league avgs here)
-    const rawSQE =
-      zones.ra.share    * 1.24 * 2 +
-      zones.paint.share * 0.90 * 2 +
-      zones.mid.share   * 0.74 * 2 +
-      zones.lc3.share   * 1.14 * 3 +
-      zones.rc3.share   * 1.14 * 3 +
-      zones.atb3.share  * 1.06 * 3;
-
-    // SAXE from player data
-    let saxe2026 = 0, saxeCareer = 0;
-    const players = playersByTeam[row.TEAM_ID] || [];
-    let playerFGAtotal = 0;
-
-    if (players.length > 0) {
-      // For each player, compute their expected pts per shot in each zone,
-      // weighted by their FGA in that zone
-      players.forEach(p => {
-        const pvals = Object.values(p);
-        const pZones = {
-          ra:    { fga:pvals[5]||0,  fgp:pvals[7]||0 },
-          paint: { fga:pvals[8]||0,  fgp:pvals[10]||0 },
-          mid:   { fga:pvals[11]||0, fgp:pvals[13]||0 },
-          lc3:   { fga:pvals[14]||0, fgp:pvals[16]||0 },
-          rc3:   { fga:pvals[17]||0, fgp:pvals[19]||0 },
-          atb3:  { fga:pvals[20]||0, fgp:pvals[22]||0 },
-        };
-        const pTotal = Object.values(pZones).reduce((s,z) => s+z.fga, 0);
-        playerFGAtotal += pTotal;
-
-        // Player contribution = Σ(zone_fga × player_fgp × zone_pts)
-        const contrib =
-          pZones.ra.fga    * (pZones.ra.fgp    || zones.ra.fgp)    * 2 +
-          pZones.paint.fga * (pZones.paint.fgp  || zones.paint.fgp) * 2 +
-          pZones.mid.fga   * (pZones.mid.fgp    || zones.mid.fgp)   * 2 +
-          pZones.lc3.fga   * (pZones.lc3.fgp    || zones.lc3.fgp)   * 3 +
-          pZones.rc3.fga   * (pZones.rc3.fgp    || zones.rc3.fgp)   * 3 +
-          pZones.atb3.fga  * (pZones.atb3.fgp   || zones.atb3.fgp)  * 3;
-
-        saxe2026 += contrib;
-      });
-      if (playerFGAtotal > 0) saxe2026 = saxe2026 / playerFGAtotal;
-      else saxe2026 = rawSQE;
-      // Career mode: blend with zone FG% (more stable)
-      saxeCareer = saxe2026 * 0.65 + rawSQE * 0.35;
-    } else {
-      saxe2026 = rawSQE;
-      saxeCareer = rawSQE;
-    }
-
-    const gtAdj = GT_ADJ[name] || 0;
-
-    // TOV
-    const tovPg = adv.TOV || snap.tovPg || 14;
-    const stlsPg = snap.stlsPg || 7;
-    const liveTovPct = Math.min(0.72, Math.max(0.38, stlsPg / (tovPg * 1.1)));
-    const weightedTov = tovPg * (liveTovPct * 1.4 + (1-liveTovPct));
-    const ptOffTov = snap.ptOffTov || (tovPg * 0.95);
-    const astToRatio = (snap.astPg || 20) / (tovPg || 1);
-
-    return {
-      tid: row.TEAM_ID, name, meta, snap, adv,
-      zones, totalFGA,
-      rawSQE, sqe:0, sqeNoGT:0,
-      saxe2026, saxeCareer, saxe2026NoGT:0, saxeCareerNoGT:0,
-      gtAdj, gtAdjNorm:0,
-      // zone pcts for display
-      ra_fga_pct:   zones.ra.share,
-      paint_fga_pct:zones.paint.share,
-      mid_fga_pct:  zones.mid.share,
-      lc3_fga_pct:  zones.lc3.share,
-      rc3_fga_pct:  zones.rc3.share,
-      atb3_fga_pct: zones.atb3.share,
-      corner3_pct:  (zones.lc3.fgp + zones.rc3.fgp) / 2,
-      mid_fg_pct:   zones.mid.fgp,
-      ra_fg_pct:    zones.ra.fgp,
-      // adv
-      offRtg:  adv.OFF_RATING || snap.offRtg || 104,
-      pace:    adv.PACE       || snap.pace   || 96,
-      astPct:  adv.AST_PCT    || 0.56,
-      efg:     adv.EFG_PCT    || 0.50,
-      // tov
-      tovPg, ptOffTov, liveTovPct, weightedTov, astToRatio,
-      tovDamage: 0,
-      wins: snap.wins || 0, losses: snap.losses || 0,
-    };
   });
-
-  // Normalize SQE to league avg = 100
-  const avgRaw = built.reduce((s,t) => s+t.rawSQE, 0) / built.length;
-  built.forEach(t => {
-    t.sqe = (t.rawSQE / avgRaw) * 100;
-    t.sqeNoGT = ((t.rawSQE - t.gtAdj * avgRaw * 0.01) / avgRaw) * 100;
-  });
-  const avgNoGT = built.reduce((s,t) => s+t.sqeNoGT, 0) / built.length;
-  built.forEach(t => t.sqeNoGT = (t.sqeNoGT / avgNoGT) * 100);
-
-  // Normalize SAXE
-  ['saxe2026','saxeCareer'].forEach(key => {
-    const avg = built.reduce((s,t) => s+t[key], 0) / built.length;
-    built.forEach(t => {
-      t[key] = (t[key] / avg) * 100;
-      t[key+'NoGT'] = t[key] - t.gtAdj * 0.8;
-    });
-    const avgNGT = built.reduce((s,t) => s+t[key+'NoGT'], 0) / built.length;
-    built.forEach(t => t[key+'NoGT'] = (t[key+'NoGT'] / avgNGT) * 100);
-  });
-
-  // TOV Damage
-  const avgWT = built.reduce((s,t) => s+t.weightedTov, 0) / built.length;
-  const avgPT = built.reduce((s,t) => s+t.ptOffTov,    0) / built.length;
-  built.forEach(t => {
-    t.tovDamage = ((t.weightedTov/avgWT)*60 + (t.ptOffTov/avgPT)*40);
-  });
-  const avgTD = built.reduce((s,t) => s+t.tovDamage, 0) / built.length;
-  built.forEach(t => t.tovDamage = (t.tovDamage / avgTD) * 100);
-
-  return built;
+  onoff.sort((a,b)=>b.saxe_impact-a.saxe_impact);
+  return{teams:Object.values(teams),onoff,totalShots:scR.length,fetchedAt:Date.now()};
 }
-
-// ─── LOAD DATA ────────────────────────────────────────────────────────────────
-async function loadData() {
-  setLoading('Loading zone data…', 0);
-
-  const baseParams = {PerMode:'PerGame',MeasureType:'Base',LastNGames:0,Month:0,OpponentTeamID:0,
-    PORound:0,PaceAdjust:'N',Period:0,PlusMinus:'N',Rank:'N',TeamID:0,
-    Conference:'',DateFrom:'',DateTo:'',Division:'',GameScope:'',GameSegment:'',
-    Location:'',Outcome:'',PlayerExperience:'',PlayerPosition:'',SeasonSegment:'',
-    ShotClockRange:'',StarterBench:'',VsConference:'',VsDivision:''};
-
-  try {
-    setLoading('Fetching team shot locations…', 20);
-    const [teamShotRes, playerShotRes, advRes] = await Promise.all([
-      wnbaFetch('leaguedashteamshotlocations', {...baseParams, DistanceRange:'By+Zone'}),
-      wnbaFetch('leaguedashplayershotlocations', {...baseParams, DistanceRange:'By+Zone'}),
-      wnbaFetch('leaguedashteamstats', {...baseParams, MeasureType:'Advanced', PerMode:'PerPossession'}),
-    ]);
-
-    setLoading('Computing shot quality…', 70);
-
-    if (!teamShotRes) throw new Error('Team shot location API unavailable');
-
-    const teamRows    = parseTeamShotLoc(teamShotRes);
-    const playerRows  = playerShotRes ? parsePlayerShotLoc(playerShotRes) : null;
-    const advRows     = advRes ? advRes.resultSets[0].rowSet.map(r => rowObj(advRes.resultSets[0].headers, r)) : null;
-
-    teams = buildFromShotData(teamRows, advRows, playerRows);
-    dataLive = true;
-    setLoading('', 100);
-    document.getElementById('data-status').textContent = 'Live · stats.wnba.com';
-    setLiveSrc();
-  } catch(err) {
-    console.warn('Live API failed, using snapshot:', err.message);
-    useFallback();
-  }
-
-  dataReady = true;
-  renderAll();
-}
-
-function useFallback() {
-  // Build from snapshot data with reasonable zone estimates based on team style
-  const fallbackZones = {
-    'Minnesota Lynx':         { ra:.28, paint:.18, mid:.10, lc3:.07, rc3:.07, atb3:.29, ra_fgp:.64, paint_fgp:.48, mid_fgp:.40, lc3_fgp:.40, rc3_fgp:.39, atb3_fgp:.36 },
-    'New York Liberty':       { ra:.24, paint:.16, mid:.09, lc3:.08, rc3:.08, atb3:.33, ra_fgp:.62, paint_fgp:.46, mid_fgp:.38, lc3_fgp:.42, rc3_fgp:.41, atb3_fgp:.37 },
-    'Las Vegas Aces':         { ra:.27, paint:.17, mid:.10, lc3:.07, rc3:.07, atb3:.30, ra_fgp:.63, paint_fgp:.47, mid_fgp:.39, lc3_fgp:.39, rc3_fgp:.40, atb3_fgp:.35 },
-    'Atlanta Dream':          { ra:.26, paint:.19, mid:.11, lc3:.07, rc3:.07, atb3:.28, ra_fgp:.62, paint_fgp:.47, mid_fgp:.38, lc3_fgp:.38, rc3_fgp:.38, atb3_fgp:.35 },
-    'Indiana Fever':          { ra:.23, paint:.15, mid:.10, lc3:.08, rc3:.08, atb3:.34, ra_fgp:.61, paint_fgp:.45, mid_fgp:.37, lc3_fgp:.41, rc3_fgp:.40, atb3_fgp:.36 },
-    'Dallas Wings':           { ra:.25, paint:.17, mid:.12, lc3:.07, rc3:.07, atb3:.30, ra_fgp:.61, paint_fgp:.46, mid_fgp:.37, lc3_fgp:.39, rc3_fgp:.38, atb3_fgp:.34 },
-    'Golden State Valkyries': { ra:.24, paint:.16, mid:.11, lc3:.08, rc3:.08, atb3:.31, ra_fgp:.61, paint_fgp:.45, mid_fgp:.37, lc3_fgp:.40, rc3_fgp:.39, atb3_fgp:.34 },
-    'Los Angeles Sparks':     { ra:.26, paint:.17, mid:.12, lc3:.07, rc3:.07, atb3:.29, ra_fgp:.61, paint_fgp:.46, mid_fgp:.37, lc3_fgp:.38, rc3_fgp:.38, atb3_fgp:.34 },
-    'Toronto Tempo':          { ra:.24, paint:.16, mid:.11, lc3:.08, rc3:.07, atb3:.32, ra_fgp:.60, paint_fgp:.44, mid_fgp:.36, lc3_fgp:.38, rc3_fgp:.39, atb3_fgp:.34 },
-    'Washington Mystics':     { ra:.23, paint:.16, mid:.13, lc3:.07, rc3:.07, atb3:.32, ra_fgp:.59, paint_fgp:.43, mid_fgp:.36, lc3_fgp:.37, rc3_fgp:.37, atb3_fgp:.33 },
-    'Portland Fire':          { ra:.23, paint:.16, mid:.13, lc3:.07, rc3:.07, atb3:.32, ra_fgp:.59, paint_fgp:.43, mid_fgp:.36, lc3_fgp:.37, rc3_fgp:.36, atb3_fgp:.33 },
-    'Chicago Sky':            { ra:.22, paint:.15, mid:.14, lc3:.07, rc3:.07, atb3:.33, ra_fgp:.58, paint_fgp:.43, mid_fgp:.35, lc3_fgp:.36, rc3_fgp:.36, atb3_fgp:.32 },
-    'Phoenix Mercury':        { ra:.22, paint:.15, mid:.14, lc3:.07, rc3:.07, atb3:.33, ra_fgp:.58, paint_fgp:.42, mid_fgp:.35, lc3_fgp:.36, rc3_fgp:.35, atb3_fgp:.32 },
-    'Seattle Storm':          { ra:.21, paint:.15, mid:.15, lc3:.07, rc3:.06, atb3:.34, ra_fgp:.57, paint_fgp:.42, mid_fgp:.35, lc3_fgp:.35, rc3_fgp:.35, atb3_fgp:.31 },
-    'Connecticut Sun':        { ra:.21, paint:.14, mid:.15, lc3:.07, rc3:.06, atb3:.35, ra_fgp:.57, paint_fgp:.41, mid_fgp:.34, lc3_fgp:.34, rc3_fgp:.34, atb3_fgp:.30 },
-  };
-
-  teams = Object.entries(SNAPSHOT).map(([name, snap]) => {
-    const meta = TEAM_META[name] || {abbr:name.slice(0,3).toUpperCase(), color:'#666', conf:'?'};
-    const fz = fallbackZones[name] || { ra:.25, paint:.16, mid:.12, lc3:.07, rc3:.07, atb3:.31, ra_fgp:.61, paint_fgp:.45, mid_fgp:.37, lc3_fgp:.38, rc3_fgp:.38, atb3_fgp:.34 };
-
-    const zones = {
-      ra:    { fga:0, share:fz.ra,    fgp:fz.ra_fgp },
-      paint: { fga:0, share:fz.paint, fgp:fz.paint_fgp },
-      mid:   { fga:0, share:fz.mid,   fgp:fz.mid_fgp },
-      lc3:   { fga:0, share:fz.lc3,   fgp:fz.lc3_fgp },
-      rc3:   { fga:0, share:fz.rc3,   fgp:fz.rc3_fgp },
-      atb3:  { fga:0, share:fz.atb3,  fgp:fz.atb3_fgp },
-    };
-
-    const rawSQE = zones.ra.share*1.24*2 + zones.paint.share*0.90*2 + zones.mid.share*0.74*2 +
-                   zones.lc3.share*1.14*3 + zones.rc3.share*1.14*3 + zones.atb3.share*1.06*3;
-
-    // SAXE from actual FG% in zones (team level since no player data)
-    const saxeRaw = zones.ra.share*fz.ra_fgp*2 + zones.paint.share*fz.paint_fgp*2 + zones.mid.share*fz.mid_fgp*2 +
-                    zones.lc3.share*fz.lc3_fgp*3 + zones.rc3.share*fz.rc3_fgp*3 + zones.atb3.share*fz.atb3_fgp*3;
-
-    const liveTovPct = Math.min(0.72, Math.max(0.38, snap.stlsPg / (snap.tovPg * 1.1)));
-    const weightedTov = snap.tovPg * (liveTovPct * 1.4 + (1-liveTovPct));
-
-    return {
-      tid:0, name, meta, snap, adv:{},
-      zones, totalFGA:0, rawSQE, sqe:0, sqeNoGT:0,
-      saxe2026:saxeRaw, saxeCareer:saxeRaw*0.95, saxe2026NoGT:0, saxeCareerNoGT:0,
-      gtAdj: GT_ADJ[name]||0,
-      ra_fga_pct:fz.ra, paint_fga_pct:fz.paint, mid_fga_pct:fz.mid,
-      lc3_fga_pct:fz.lc3, rc3_fga_pct:fz.rc3, atb3_fga_pct:fz.atb3,
-      corner3_pct:(fz.lc3_fgp+fz.rc3_fgp)/2, mid_fg_pct:fz.mid_fgp, ra_fg_pct:fz.ra_fgp,
-      offRtg:snap.offRtg, pace:snap.pace, astPct:0.56, efg:0.50,
-      tovPg:snap.tovPg, ptOffTov:snap.ptOffTov, liveTovPct, weightedTov,
-      astToRatio: snap.astPg / snap.tovPg,
-      tovDamage:0, wins:snap.wins, losses:snap.losses,
-    };
-  });
-
-  const avgRaw = teams.reduce((s,t)=>s+t.rawSQE,0)/teams.length;
-  teams.forEach(t => { t.sqe=(t.rawSQE/avgRaw)*100; t.sqeNoGT=((t.rawSQE-t.gtAdj*avgRaw*0.01)/avgRaw)*100; });
-  const avgNGT = teams.reduce((s,t)=>s+t.sqeNoGT,0)/teams.length;
-  teams.forEach(t => t.sqeNoGT=(t.sqeNoGT/avgNGT)*100);
-
-  ['saxe2026','saxeCareer'].forEach(key => {
-    const avg = teams.reduce((s,t)=>s+t[key],0)/teams.length;
-    teams.forEach(t => { t[key]=(t[key]/avg)*100; t[key+'NoGT']=t[key]-t.gtAdj*0.8; });
-    const an = teams.reduce((s,t)=>s+t[key+'NoGT'],0)/teams.length;
-    teams.forEach(t => t[key+'NoGT']=(t[key+'NoGT']/an)*100);
-  });
-
-  const avgWT = teams.reduce((s,t)=>s+t.weightedTov,0)/teams.length;
-  const avgPT = teams.reduce((s,t)=>s+t.ptOffTov,0)/teams.length;
-  teams.forEach(t => t.tovDamage=((t.weightedTov/avgWT)*60+(t.ptOffTov/avgPT)*40));
-  const avgTD = teams.reduce((s,t)=>s+t.tovDamage,0)/teams.length;
-  teams.forEach(t => t.tovDamage=(t.tovDamage/avgTD)*100);
-
-  dataLive = false;
-  document.getElementById('data-status').textContent = 'Snapshot · June 17, 2026';
-  setFallbackSrc();
-}
-
-function setLiveSrc() {
-  ['sqe-src','saxe-src','zone-src'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) { el.innerHTML='Source: <a href="https://stats.wnba.com" target="_blank">stats.wnba.com</a> · Live data'; el.className='src-note live'; }
-  });
-}
-function setFallbackSrc() {
-  const msg = 'Source: Estimated zone splits · API unavailable (CORS) — open <a href="https://stats.wnba.com" target="_blank">stats.wnba.com</a> in another tab and refresh';
-  ['sqe-src','saxe-src','zone-src'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) { el.innerHTML=msg; el.className='src-note'; }
-  });
-}
-
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-function std(arr){const m=arr.reduce((a,b)=>a+b,0)/arr.length;return Math.sqrt(arr.reduce((s,v)=>s+(v-m)**2,0)/arr.length)||1;}
-function grade(v,arr){const m=arr.reduce((a,b)=>a+b,0)/arr.length,s=std(arr),z=(v-m)/s;return z>1.04?'A':z>0.35?'B':z>-0.35?'C':z>-1.04?'D':'F';}
-function bar(v,min,max,col,w=50){const f=Math.max(0,Math.min(w,((v-min)/(max-min||1))*w));return `<span class="bar-track" style="width:${w}px"><span class="bar-fill" style="width:${f.toFixed(0)}px;background:${col}"></span></span>`;}
-function tc(t){return `<div class="tc"><span class="tc-dot" style="background:${t.meta.color}"></span><strong>${t.meta.abbr}</strong><span class="tc-city">${t.name.split(' ').slice(0,-1).join(' ')}</span></div>`;}
-function pct(v,dec=1){return v!=null&&v>0?(v*100).toFixed(dec)+'%':'—';}
-function getSQE(t){return gtMode==='exclude'?t.sqeNoGT:t.sqe;}
-function getSAXE(t){const k=saxeMode==='career'?'saxeCareer':'saxe2026';return saxeGT==='exclude'?t[k+'NoGT']:t[k];}
-
-function setLoading(msg, pct) {
-  if (!msg) return;
-  ['sqe-table','saxe-table','zone-table','tov-table','standings-content'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el && !el.dataset.populated) el.innerHTML = `<div class="loader-wrap"><div class="loader"></div><div class="loader-text">${msg}</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div></div>`;
-  });
-}
-
-// ─── RENDER SQE ──────────────────────────────────────────────────────────────
-function renderSQE() {
-  if (!dataReady) return;
-  const sorted = [...teams].sort((a,b) => b[sqeSort]-a[sqeSort]);
-  const sqeVals = sorted.map(t=>getSQE(t));
-  const min=Math.min(...sqeVals), max=Math.max(...sqeVals);
-
-  let html=`<div class="tbl-wrap"><table><thead><tr>
-    <th>Team</th>
-    <th class="${sqeSort==='sqe'?'sorted':''}" onclick="setSqeSort('sqe')">SQE<span class="sub">system quality</span></th>
-    <th class="${sqeSort==='ra_fga_pct'?'sorted':''}" onclick="setSqeSort('ra_fga_pct')">RA%<span class="sub">restricted area</span></th>
-    <th class="${sqeSort==='paint_fga_pct'?'sorted':''}" onclick="setSqeSort('paint_fga_pct')">Paint%<span class="sub">non-RA</span></th>
-    <th class="${sqeSort==='mid_fga_pct'?'sorted':''}" onclick="setSqeSort('mid_fga_pct')">Mid%<span class="sub">↓ lower = better</span></th>
-    <th class="${sqeSort==='lc3_fga_pct'?'sorted':''}" onclick="setSqeSort('lc3_fga_pct')">LC3%<span class="sub">left corner 3</span></th>
-    <th class="${sqeSort==='rc3_fga_pct'?'sorted':''}" onclick="setSqeSort('rc3_fga_pct')">RC3%<span class="sub">right corner 3</span></th>
-    <th class="${sqeSort==='atb3_fga_pct'?'sorted':''}" onclick="setSqeSort('atb3_fga_pct')">ATB3%<span class="sub">above break 3</span></th>
-    <th class="${sqeSort==='offRtg'?'sorted':''}" onclick="setSqeSort('offRtg')">OffRtg</th>
-    <th>Grade</th>
-  </tr></thead><tbody>`;
-
-  sorted.forEach((t,i) => {
-    const sv = getSQE(t);
-    const g = grade(sv, sqeVals);
-    html+=`<tr>
-      <td>${tc(t)}</td>
-      <td><div class="bar">${sv.toFixed(1)}${bar(sv,min,max,t.meta.color)}</div></td>
-      <td>${pct(t.ra_fga_pct)}</td>
-      <td>${pct(t.paint_fga_pct)}</td>
-      <td style="color:${t.mid_fga_pct>.13?'#ff6b6b':t.mid_fga_pct<.09?'#c8f035':'inherit'}">${pct(t.mid_fga_pct)}</td>
-      <td>${pct(t.lc3_fga_pct)}</td>
-      <td>${pct(t.rc3_fga_pct)}</td>
-      <td>${pct(t.atb3_fga_pct)}</td>
-      <td style="color:var(--text2)">${t.offRtg.toFixed(1)}</td>
-      <td><span class="grade ${g}">${g}</span></td>
-    </tr>`;
-  });
-  html+='</tbody></table></div>';
-  const el = document.getElementById('sqe-table');
-  el.innerHTML=html; el.dataset.populated='1';
-
-  // Chart
-  const cs = document.getElementById('sqe-chart-section');
-  cs.style.display='block';
-  const h = Math.max(sorted.length*30+60,200);
-  document.getElementById('sqe-chart-box').style.height=h+'px';
+function sd(a){const m=a.reduce((x,y)=>x+y,0)/a.length;return Math.sqrt(a.reduce((s,v)=>s+(v-m)**2,0)/a.length)||1;}
+function grade(v,a){const m=a.reduce((x,y)=>x+y,0)/a.length,s=sd(a),z=(v-m)/s;return z>1.04?'A':z>0.35?'B':z>-0.35?'C':z>-1.04?'D':'F';}
+function bar(v,a,c){const mn=Math.min(...a),mx=Math.max(...a);const w=Math.max(0,Math.min(56,((v-mn)/(mx-mn||1))*56));return`<span class="bt"><span class="bf" style="width:${w.toFixed(0)}px;background:${c}"></span></span>`;}
+function tTD(t){return`<td style="font-weight:500;white-space:nowrap"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${t.color};margin-right:7px;vertical-align:middle"></span>${t.abbr}<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:4px">${t.name.split(' ').pop()}</span></td>`;}
+function p1(v){return(v*100).toFixed(1)+'%';}
+function f1(v){return typeof v==='number'?v.toFixed(1):'—';}
+function delt(v){const c=Math.abs(v)<0.3?'dz':v>0?'dp':'dn';return`<span class="${c}">${v>=0?'+':''}${v.toFixed(1)}</span>`;}
+function renderSQE(){
+  if(!DB)return;
+  const useGT=sqeGT==='exc',sk=useGT?'sqeNorm_gt':'sqeNorm';
+  const sK=document.getElementById('sqe-sort').value;
+  const teams=[...DB.teams].filter(t=>t.sqeNorm>0).sort((a,b)=>b[sK==='sqeNorm'?sk:sK]-(a[sK==='sqeNorm'?sk:sK]||0));
+  if(sK==='sqeNorm')teams.sort((a,b)=>b[sk]-a[sk]);
+  const arr=teams.map(t=>t[sk]);
+  let h=`<div class="twrap"><table><thead><tr><th>Team</th><th class="${sK==='sqeNorm'?'sorted':''}">SQE</th><th class="${sK==='ra_pct'?'sorted':''}">RA%</th><th class="${sK==='paint_pct'?'sorted':''}">Paint%</th><th class="${sK==='mid_pct'?'sorted':''}">Mid%</th><th class="${sK==='corner3_pct'?'sorted':''}">Corner 3%</th><th class="${sK==='atb_pct'?'sorted':''}">ATB%</th><th class="${sK==='offRtg'?'sorted':''}">Off Rtg</th><th>Grade</th></tr></thead><tbody>`;
+  teams.forEach(t=>{const sq=t[sk],g=grade(sq,arr);h+=`<tr>${tTD(t)}<td>${sq.toFixed(1)}${bar(sq,arr,t.color)}</td><td>${p1(t.ra_pct)}</td><td>${p1(t.paint_pct)}</td><td class="${t.mid_pct>0.14?'mid-bad':''}">${p1(t.mid_pct)}</td><td>${p1(t.corner3_pct)}</td><td>${p1(t.atb_pct)}</td><td>${f1(t.offRtg)}</td><td><span class="gr gr-${g}">${g}</span></td></tr>`;});
+  h+=`</tbody></table></div>`;
+  if(DB.totalShots)h+=`<p class="srcline">Computed from ${DB.totalShots.toLocaleString()} shots · shotchartdetail endpoint</p>`;
+  document.getElementById('sqe-content').innerHTML=h;
+  document.getElementById('sqe-chart-wrap').style.display='block';
+  const sorted=[...teams].sort((a,b)=>a[sk]-b[sk]);
+  document.getElementById('sqe-chart-box').style.height=Math.max(sorted.length*32+60,200)+'px';
   if(sqeChart)sqeChart.destroy();
-  const avg=sqeVals.reduce((a,b)=>a+b,0)/sqeVals.length;
-  sqeChart=new Chart(document.getElementById('sqeChart'),{
-    type:'bar',
-    data:{labels:sorted.map(t=>t.meta.abbr),datasets:[{label:'SQE',
-      data:sorted.map(t=>+getSQE(t).toFixed(1)),
-      backgroundColor:sorted.map(t=>t.meta.color+'bb'),
-      borderColor:sorted.map(t=>t.meta.color),borderWidth:1,borderRadius:3}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` SQE: ${c.raw} (avg ${avg.toFixed(1)})`}}},
-      scales:{x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#3e3e58',font:{size:10}},min:Math.floor(min-3)},
-              y:{grid:{display:false},ticks:{color:'#7878a0',font:{size:10}}}}}
-  });
+  sqeChart=new Chart(document.getElementById('sqeChart'),{type:'bar',data:{labels:sorted.map(t=>t.abbr),datasets:[{label:'SQE',data:sorted.map(t=>parseFloat(t[sk].toFixed(1))),backgroundColor:sorted.map(t=>t.color+'bb'),borderColor:sorted.map(t=>t.color),borderWidth:1,borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` SQE: ${c.raw}`}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#666',font:{size:11}},min:Math.floor(Math.min(...arr)-2)},y:{grid:{display:false},ticks:{color:'#aaa',font:{size:11}}}}}});
 }
-
-// ─── RENDER SAXE ─────────────────────────────────────────────────────────────
-function renderSAXE() {
-  if (!dataReady) return;
-  const sorted = [...teams].sort((a,b)=>getSAXE(b)-getSAXE(a));
-  const vals = sorted.map(t=>getSAXE(t));
-  const min=Math.min(...vals), max=Math.max(...vals);
-
-  let html=`<div class="tbl-wrap"><table><thead><tr>
-    <th>Team</th>
-    <th>SAXE<span class="sub">shooter-adjusted</span></th>
-    <th>SQE<span class="sub">system baseline</span></th>
-    <th>Δ<span class="sub">shooter lift</span></th>
-    <th>RA FG%<span class="sub">at rim</span></th>
-    <th>Mid FG%<span class="sub">mid-range</span></th>
-    <th>Corner FG%<span class="sub">avg LC3+RC3</span></th>
-    <th>Grade</th>
-  </tr></thead><tbody>`;
-
-  sorted.forEach(t => {
-    const sv=getSAXE(t), sq=getSQE(t), delta=sv-sq;
-    const g=grade(sv,vals);
-    const dc=Math.abs(delta)<0.5?'dneu':delta>=0?'dpos':'dneg';
-    html+=`<tr>
-      <td>${tc(t)}</td>
-      <td><div class="bar">${sv.toFixed(1)}${bar(sv,min,max,t.meta.color)}</div></td>
-      <td style="color:var(--text2)">${sq.toFixed(1)}</td>
-      <td><span class="${dc}">${delta>=0?'+':''}${delta.toFixed(1)}</span></td>
-      <td>${pct(t.ra_fg_pct)}</td>
-      <td>${pct(t.mid_fg_pct)}</td>
-      <td>${pct(t.corner3_pct)}</td>
-      <td><span class="grade ${g}">${g}</span></td>
-    </tr>`;
-  });
-  html+='</tbody></table></div>';
-  if (!dataLive) {
-    html=`<div class="err" style="margin-bottom:10px">⚠ Live API unavailable — player zone splits not loaded. SAXE is using team-level FG% per zone, not individual shooter data. Open <a href="https://stats.wnba.com" target="_blank" style="color:inherit">stats.wnba.com</a> in another tab and refresh for true per-player directional splits.</div>`+html;
+function renderSAXE(){
+  if(!DB)return;
+  const useGT=saxeGT==='exc';
+  const sk=saxeMode==='2026'?(useGT?'saxe2026_gt':'saxe2026'):(useGT?'saxeSmooth_gt':'saxeSmooth');
+  const sqk=useGT?'sqeNorm_gt':'sqeNorm';
+  const teams=[...DB.teams].filter(t=>t[sk]>0).sort((a,b)=>b[sk]-a[sk]);
+  const arr=teams.map(t=>t[sk]);
+  let h=`<div class="twrap"><table><thead><tr><th>Team</th><th>SAXE</th><th>SQE</th><th>Δ shooter lift</th><th>Corner 3 FG%</th><th>ATB FG%</th><th>RA FG%</th><th>Paint FG%</th><th>Grade</th></tr></thead><tbody>`;
+  teams.forEach(t=>{const sv=t[sk],sq=t[sqk],d=sv-sq,g=grade(sv,arr);h+=`<tr>${tTD(t)}<td>${sv.toFixed(1)}${bar(sv,arr,t.color)}</td><td style="color:var(--text3)">${sq.toFixed(1)}</td><td>${delt(d)}</td><td>${p1(t.corner3_fg)}</td><td>${p1(t.atb_fg)}</td><td>${p1(t.ra_fg)}</td><td>${p1(t.paint_fg)}</td><td><span class="gr gr-${g}">${g}</span></td></tr>`;});
+  h+=`</tbody></table></div><p class="srcline">Δ = SAXE minus SQE. Positive = shooters elevating looks. Smoothed = blends small-sample zones toward team avg.</p>`;
+  document.getElementById('saxe-content').innerHTML=h;
+}
+function renderZones(){
+  if(!DB)return;
+  const sk=document.getElementById('zone-sort').value;
+  const teams=[...DB.teams].filter(t=>t.total_fga>0).sort((a,b)=>b[sk]-a[sk]);
+  let h=`<div class="twrap"><table><thead><tr><th>Team</th><th class="${sk==='ra_pct'?'sorted':''}">RA%</th><th>RA FG%</th><th class="${sk==='paint_pct'?'sorted':''}">Paint%</th><th>Paint FG%</th><th class="${sk==='mid_pct'?'sorted':''}">Mid%</th><th>Mid FG%</th><th class="${sk==='lc3_pct'?'sorted':''}">LC3%</th><th>LC3 FG%</th><th class="${sk==='rc3_pct'?'sorted':''}">RC3%</th><th>RC3 FG%</th><th class="${sk==='atb_pct'?'sorted':''}">ATB%</th><th>ATB FG%</th></tr></thead><tbody>`;
+  teams.forEach(t=>{h+=`<tr>${tTD(t)}<td>${p1(t.ra_pct)}</td><td>${p1(t.ra_fg)}</td><td>${p1(t.paint_pct)}</td><td>${p1(t.paint_fg)}</td><td class="${t.mid_pct>0.14?'mid-bad':''}">${p1(t.mid_pct)}</td><td class="${t.mid_fg<0.36?'mid-bad':''}">${p1(t.mid_fg)}</td><td>${p1(t.lc3_pct)}</td><td>${p1(t.lc3_fg)}</td><td>${p1(t.rc3_pct)}</td><td>${p1(t.rc3_fg)}</td><td>${p1(t.atb_pct)}</td><td>${p1(t.atb_fg)}</td></tr>`;});
+  h+=`</tbody></table></div><p class="srcline">RA=Restricted Area · Paint=non-RA paint · Mid=mid-range · LC3/RC3=corner threes · ATB=above break 3 · <span class="mid-bad">red=inefficient</span></p>`;
+  document.getElementById('zones-content').innerHTML=h;
+}
+function populateTeamFilter(){
+  if(!DB)return;
+  const sel=document.getElementById('onoff-team');
+  sel.innerHTML='<option value="all">All teams</option>';
+  [...DB.teams].sort((a,b)=>a.name.localeCompare(b.name)).forEach(t=>{sel.innerHTML+=`<option value="${t.tid}">${t.name}</option>`;});
+}
+function renderOnOff(){
+  if(!DB)return;
+  const teamF=document.getElementById('onoff-team').value;
+  const sK=document.getElementById('onoff-sort').value;
+  const minShots=parseInt(document.getElementById('onoff-min').value)||20;
+  let rows=[...DB.onoff].filter(r=>r.shots>=minShots);
+  if(teamF!=='all')rows=rows.filter(r=>String(r.tid)===String(teamF));
+  if(sK==='saxe_impact')rows.sort((a,b)=>b.saxe_impact-a.saxe_impact);
+  else if(sK==='saxe_on')rows.sort((a,b)=>b.saxe_on-a.saxe_on);
+  else if(sK==='shots')rows.sort((a,b)=>b.shots-a.shots);
+  if(!rows.length){document.getElementById('onoff-content').innerHTML=`<div class="ibox">No players meet the minimum shot threshold.</div>`;return;}
+  const mn=Math.min(...rows.map(r=>r.saxe_impact)),mx=Math.max(...rows.map(r=>r.saxe_impact));
+  let h=`<div class="twrap"><table><thead><tr><th>#</th><th>Player</th><th>Team</th><th class="${sK==='saxe_on'?'sorted':''}">SAXE on</th><th>SAXE off</th><th class="${sK==='saxe_impact'?'sorted':''}">SAXE Δ</th><th class="${sK==='shots'?'sorted':''}">Shots</th></tr></thead><tbody>`;
+  rows.forEach((r,i)=>{const bw=Math.max(0,Math.min(70,((r.saxe_impact-mn)/(mx-mn||1))*70));h+=`<tr><td style="color:var(--text3);font-size:12px">${i+1}</td><td style="font-weight:500;white-space:nowrap">${r.name}</td><td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${r.color};margin-right:6px;vertical-align:middle"></span>${r.abbr}</td><td>${f1(r.saxe_on)}</td><td style="color:var(--text3)">${f1(r.saxe_off)}</td><td>${delt(r.saxe_impact)}<span class="bt" style="margin-left:6px"><span class="bf" style="width:${bw.toFixed(0)}px;background:${r.color}"></span></span></td><td style="color:var(--text3)">${r.shots}</td></tr>`;});
+  h+=`</tbody></table></div><p class="srcline">SAXE Δ = team's shooter-adjusted value with vs without this player. Ranked highest impact first. Built from actual 2026 shot data.</p>`;
+  document.getElementById('onoff-content').innerHTML=h;
+}
+function renderTOV(){
+  if(!DB)return;
+  const sk=document.getElementById('tov-sort').value;
+  const asc=['tovDmg','tov_pg','opp_pts_tov','live_tov_pct'].includes(sk);
+  const teams=[...DB.teams].filter(t=>t.tov_pg>0).sort((a,b)=>asc?a[sk]-b[sk]:b[sk]-a[sk]);
+  const dmgArr=teams.map(t=>t.tovDmg);
+  let h=`<div class="twrap"><table><thead><tr><th>Team</th><th class="${sk==='tovDmg'?'sorted':''}">TOV Damage</th><th class="${sk==='tov_pg'?'sorted':''}">TOV/g</th><th class="${sk==='opp_pts_tov'?'sorted':''}">Opp pts off TOV/g</th><th class="${sk==='live_tov_pct'?'sorted':''}">Live TOV%</th><th class="${sk==='ast_to'?'sorted':''}">AST/TO</th><th>Grade</th></tr></thead><tbody>`;
+  teams.forEach(t=>{const g=grade(-t.tovDmg,dmgArr.map(x=>-x));h+=`<tr>${tTD(t)}<td>${t.tovDmg.toFixed(1)}${bar(t.tovDmg,dmgArr,t.color)}</td><td>${f1(t.tov_pg)}</td><td>${f1(t.opp_pts_tov)}</td><td>${p1(t.live_tov_pct)}</td><td>${t.ast_to.toFixed(2)}</td><td><span class="gr gr-${g}">${g}</span></td></tr>`;});
+  h+=`</tbody></table></div><p class="srcline">TOV Damage = (TOV/g × 0.6 + opp pts off TOV/g × 0.4) × live-ball multiplier. Lower = better.</p>`;
+  document.getElementById('tov-content').innerHTML=h;
+}
+function renderStandings(){
+  if(!DB)return;
+  const byName={};DB.teams.forEach(t=>byName[t.name]=t);
+  const east=STANDINGS.filter(s=>s.conf==='E').map(s=>s.name);
+  const west=STANDINGS.filter(s=>s.conf==='W').map(s=>s.name);
+  function cH(names,label){
+    let h=`<div style="margin-bottom:22px"><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">${label}</div><div class="twrap"><table><thead><tr><th>Team</th><th>W</th><th>L</th><th>Win%</th><th>SQE</th><th>SAXE</th><th>Off Rtg</th></tr></thead><tbody>`;
+    names.forEach((name,i)=>{const t=byName[name];if(!t||!t.sqeNorm)return;const gp=t.wins+t.losses;h+=`<tr><td style="font-weight:500"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${t.color};margin-right:7px;vertical-align:middle"></span><span style="font-size:11px;color:var(--text3);margin-right:5px">${i+1}.</span>${t.name}</td><td style="color:var(--accent);font-weight:500">${t.wins}</td><td style="color:var(--text3)">${t.losses}</td><td>${gp>0?p1(t.wins/gp):'—'}</td><td>${t.sqeNorm.toFixed(1)}</td><td>${t.saxe2026.toFixed(1)}</td><td>${f1(t.offRtg)}</td></tr>`;});
+    return h+'</tbody></table></div></div>';
   }
-  const el=document.getElementById('saxe-table');
-  el.innerHTML=html; el.dataset.populated='1';
+  document.getElementById('standings-content').innerHTML=cH(east,'Eastern Conference')+cH(west,'Western Conference');
 }
-
-// ─── RENDER ZONES ─────────────────────────────────────────────────────────────
-function renderZones() {
-  if (!dataReady) return;
-  const zSort = document.getElementById('zone-sort').value;
-  const sorted = [...teams].sort((a,b)=>b[zSort]-a[zSort]);
-
-  let html=`<div class="tbl-wrap"><table><thead><tr>
-    <th>Team</th>
-    <th class="${zSort==='ra_fga_pct'?'sorted':''}" onclick="setZoneSort('ra_fga_pct')">RA%<span class="sub">FGA share</span></th>
-    <th class="${zSort==='ra_fg_pct'?'sorted':''}" onclick="setZoneSort('ra_fg_pct')">RA FG%</th>
-    <th class="${zSort==='paint_fga_pct'?'sorted':''}" onclick="setZoneSort('paint_fga_pct')">Paint%</th>
-    <th class="${zSort==='mid_fga_pct'?'sorted':''}" onclick="setZoneSort('mid_fga_pct')">Mid%<span class="sub">↓ lower=better</span></th>
-    <th class="${zSort==='mid_fg_pct'?'sorted':''}" onclick="setZoneSort('mid_fg_pct')">Mid FG%</th>
-    <th class="${zSort==='lc3_fga_pct'?'sorted':''}" onclick="setZoneSort('lc3_fga_pct')">LC3%</th>
-    <th class="${zSort==='rc3_fga_pct'?'sorted':''}" onclick="setZoneSort('rc3_fga_pct')">RC3%</th>
-    <th class="${zSort==='atb3_fga_pct'?'sorted':''}" onclick="setZoneSort('atb3_fga_pct')">ATB3%</th>
-    <th class="${zSort==='corner3_pct'?'sorted':''}" onclick="setZoneSort('corner3_pct')">Corner FG%</th>
-  </tr></thead><tbody>`;
-
-  sorted.forEach(t => {
-    html+=`<tr>
-      <td>${tc(t)}</td>
-      <td>${pct(t.ra_fga_pct)}</td>
-      <td>${pct(t.ra_fg_pct)}</td>
-      <td>${pct(t.paint_fga_pct)}</td>
-      <td style="color:${t.mid_fga_pct>.13?'#ff6b6b':t.mid_fga_pct<.09?'#c8f035':'inherit'}">${pct(t.mid_fga_pct)}</td>
-      <td>${pct(t.mid_fg_pct)}</td>
-      <td>${pct(t.lc3_fga_pct)}</td>
-      <td>${pct(t.rc3_fga_pct)}</td>
-      <td>${pct(t.atb3_fga_pct)}</td>
-      <td>${pct(t.corner3_pct)}</td>
-    </tr>`;
-  });
-  html+='</tbody></table></div>';
-  const el=document.getElementById('zone-table');
-  el.innerHTML=html; el.dataset.populated='1';
+function switchTab(id){const ids=['sqe','saxe','zones','onoff','tov','standings','method'];document.querySelectorAll('.ntab').forEach((t,i)=>t.classList.toggle('active',ids[i]===id));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.getElementById(id+'-tab').classList.add('active');}
+function setSaxeMode(m){saxeMode=m;document.getElementById('mode-2026').classList.toggle('active',m==='2026');document.getElementById('mode-career').classList.toggle('active',m==='career');renderSAXE();}
+function setGT(tab,v){if(tab==='sqe'){sqeGT=v;document.getElementById('sqe-inc').classList.toggle('active',v==='inc');document.getElementById('sqe-exc').classList.toggle('active',v==='exc');renderSQE();}else{saxeGT=v;document.getElementById('saxe-inc').classList.toggle('active',v==='inc');document.getElementById('saxe-exc').classList.toggle('active',v==='exc');renderSAXE();}}
+function renderAll(){renderSQE();renderSAXE();renderZones();populateTeamFilter();renderOnOff();renderTOV();renderStandings();}
+async function init(){
+  const cached=cacheGet();
+  if(cached){DB=cached.d;setStatus(`cached · ${Math.round((Date.now()-cached.ts)/60000)}m ago`);renderAll();return;}
+  try{DB=await loadAPI();cacheSet(DB);setStatus(`live · ${DB.totalShots?.toLocaleString()||'?'} shots · ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`);renderAll();}
+  catch(err){console.error(err);setStatus('API unavailable — open stats.wnba.com then ↺ Refresh');document.getElementById('sqe-content').innerHTML=`<div style="padding:20px;color:var(--text2);font-size:13px"><strong style="color:var(--red)">Could not load shot chart data.</strong><br><br>The WNBA stats API blocks cross-domain requests. To fix:<br>1. Open <a href="https://stats.wnba.com" target="_blank" style="color:var(--accent)">stats.wnba.com</a> in a new tab<br>2. Come back and hit <strong>↺ Refresh</strong></div>`;['saxe-content','zones-content','onoff-content','tov-content','standings-content'].forEach(id=>{document.getElementById(id).innerHTML=document.getElementById('sqe-content').innerHTML;});}
 }
-
-// ─── RENDER TOV ──────────────────────────────────────────────────────────────
-function renderTOV() {
-  if (!dataReady) return;
-  const sk = document.getElementById('tov-sort').value;
-  // higher tovDamage/tovPg/ptOffTov/liveTovPct = worse; astToRatio higher = better
-  const sorted = sk==='astToRatio'
-    ? [...teams].sort((a,b)=>b[sk]-a[sk])
-    : [...teams].sort((a,b)=>b[sk]-a[sk]);
-  const tdVals = sorted.map(t=>t.tovDamage);
-  const min=Math.min(...tdVals), max=Math.max(...tdVals);
-
-  let html=`<div class="tbl-wrap"><table><thead><tr>
-    <th>Team</th>
-    <th class="${sk==='tovDamage'?'sorted':''}" onclick="setTovSort('tovDamage')">TOV Damage<span class="sub">lower = better</span></th>
-    <th class="${sk==='tovPg'?'sorted':''}" onclick="setTovSort('tovPg')">TOV/g</th>
-    <th class="${sk==='ptOffTov'?'sorted':''}" onclick="setTovSort('ptOffTov')">Opp Pts/TOV<span class="sub">pts off our TOs</span></th>
-    <th class="${sk==='liveTovPct'?'sorted':''}" onclick="setTovSort('liveTovPct')">Live TOV%<span class="sub">est. from steals</span></th>
-    <th class="${sk==='astToRatio'?'sorted':''}" onclick="setTovSort('astToRatio')">AST/TO<span class="sub">↑ higher = better</span></th>
-    <th>Grade</th>
-  </tr></thead><tbody>`;
-
-  sorted.forEach(t => {
-    const g=grade(-t.tovDamage, sorted.map(x=>-x.tovDamage));
-    const barW=Math.max(0,Math.min(50,((t.tovDamage-min)/(max-min||1))*50));
-    html+=`<tr>
-      <td>${tc(t)}</td>
-      <td><div class="bar">${t.tovDamage.toFixed(1)}<span class="bar-track" style="width:50px"><span class="bar-fill" style="width:${barW.toFixed(0)}px;background:#ff6b6b"></span></span></div></td>
-      <td style="color:${t.tovPg>15.5?'#ff6b6b':t.tovPg<12?'#c8f035':'inherit'}">${t.tovPg.toFixed(1)}</td>
-      <td style="color:${t.ptOffTov>16?'#ff6b6b':t.ptOffTov<13.5?'#c8f035':'inherit'}">${t.ptOffTov.toFixed(1)}</td>
-      <td>${(t.liveTovPct*100).toFixed(0)}%</td>
-      <td>${t.astToRatio.toFixed(2)}</td>
-      <td><span class="grade ${g}">${g}</span></td>
-    </tr>`;
-  });
-  html+=`</tbody></table></div>
-  <div class="info" style="margin-top:16px">
-    <strong>Live TOV%</strong> — estimated from each team's opponent steal rate as a share of their turnovers. A higher live TOV% means more of your turnovers are live-ball (steals, deflections) which convert to fast-break points at ~1.4× the rate of dead-ball turnovers. The <strong>TOV Damage Score</strong> is the composite: weighted turnover volume × 60% + opponent points off turnovers × 40%, normalized to league avg = 100.
-  </div>`;
-  const el=document.getElementById('tov-table');
-  el.innerHTML=html; el.dataset.populated='1';
-}
-
-// ─── RENDER STANDINGS ────────────────────────────────────────────────────────
-function renderStandings() {
-  if (!dataReady) return;
-  const east = ['New York Liberty','Indiana Fever','Atlanta Dream','Toronto Tempo','Washington Mystics','Chicago Sky','Connecticut Sun'];
-  const west = ['Minnesota Lynx','Las Vegas Aces','Dallas Wings','Golden State Valkyries','Los Angeles Sparks','Portland Fire','Phoenix Mercury','Seattle Storm'];
-  const byName = {};
-  teams.forEach(t => byName[t.name]=t);
-
-  const conf = (names, label) => {
-    let h=`<div style="margin-bottom:20px">
-      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">${label}</div>
-      <div class="tbl-wrap"><table><thead><tr>
-        <th>#</th><th>Team</th><th>W</th><th>L</th><th>W%</th>
-        <th>SQE</th><th>SAXE</th><th>OffRtg</th><th>TOV/g</th><th>Pace</th>
-      </tr></thead><tbody>`;
-    names.forEach((name,i) => {
-      const t=byName[name]; if(!t)return;
-      const winPct = t.wins+t.losses>0?(t.wins/(t.wins+t.losses)*100).toFixed(1)+'%':'—';
-      h+=`<tr>
-        <td style="color:var(--text3)">${i+1}</td>
-        <td>${tc(t)}</td>
-        <td style="color:#c8f035;font-weight:600">${t.wins}</td>
-        <td style="color:var(--text2)">${t.losses}</td>
-        <td>${winPct}</td>
-        <td>${getSQE(t).toFixed(1)}</td>
-        <td>${getSAXE(t).toFixed(1)}</td>
-        <td>${t.offRtg.toFixed(1)}</td>
-        <td style="color:${t.tovPg>15.5?'#ff6b6b':t.tovPg<12?'#c8f035':'inherit'}">${t.tovPg.toFixed(1)}</td>
-        <td>${t.pace.toFixed(1)}</td>
-      </tr>`;
-    });
-    h+='</tbody></table></div></div>';
-    return h;
-  };
-
-  const el=document.getElementById('standings-content');
-  el.innerHTML=conf(east,'Eastern Conference')+conf(west,'Western Conference');
-  el.dataset.populated='1';
-}
-
-function renderAll() {
-  renderSQE(); renderSAXE(); renderZones(); renderTOV(); renderStandings();
-}
-
-// ─── UI CONTROLS ─────────────────────────────────────────────────────────────
-function showTab(id) {
-  currentTab=id;
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['sqe','saxe','zones','tov','standings','method'][i]===id));
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id+'-panel').classList.add('active');
-}
-function setSqeSort(k){sqeSort=k;document.getElementById('sqe-sort').value=k;renderSQE();}
-function setZoneSort(k){document.getElementById('zone-sort').value=k;renderZones();}
-function setTovSort(k){document.getElementById('tov-sort').value=k;renderTOV();}
-function setSaxeMode(m){saxeMode=m;document.getElementById('mode-2026').classList.toggle('on',m==='2026');document.getElementById('mode-career').classList.toggle('on',m==='career');renderSAXE();}
-function setGT(m){gtMode=m;document.getElementById('gt-inc').classList.toggle('on',m==='include');document.getElementById('gt-exc').classList.toggle('on',m==='exclude');document.getElementById('sqe-gt-note').style.display=m==='exclude'?'block':'none';renderSQE();renderStandings();}
-function setSGT(m){saxeGT=m;document.getElementById('sgt-inc').classList.toggle('on',m==='include');document.getElementById('sgt-exc').classList.toggle('on',m==='exclude');document.getElementById('saxe-gt-note').style.display=m==='exclude'?'block':'none';renderSAXE();}
-
-// ─── BOOT ─────────────────────────────────────────────────────────────────────
-loadData();
+init();
 </script>
 </body>
 </html>
